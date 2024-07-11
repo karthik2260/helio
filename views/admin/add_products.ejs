@@ -2,11 +2,13 @@
 <html lang="en">
 
 <head>
+  
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>
    Admin
   </title>
+  
   <!--     Fonts and icons     -->
   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
   <!-- Nucleo Icons -->
@@ -235,7 +237,7 @@
     </div>
   </div>
 </main>
-
+<!-- 
 <script>
     new DataTable('#userTable');
   
@@ -258,13 +260,84 @@
             }
         });
     });
-</script>
+</script> -->
 
 
 
+<script>
+  document.getElementById('images').addEventListener('change', function(event) {
+      var imagePreview = document.getElementById('imagePreview');
+      imagePreview.innerHTML = ''; // Clear previous previews
+  
+      Array.from(event.target.files).forEach((file, index) => {
+          var reader = new FileReader();
+          reader.onload = function(e) {
+              var previewContainer = document.createElement('div');
+              previewContainer.className = 'preview-container';
+              previewContainer.style.display = 'inline-block';
+              previewContainer.style.marginRight = '10px';
+  
+              var img = document.createElement('img');
+              img.src = e.target.result;
+              img.style.maxWidth = '100px';
+              img.style.maxHeight = '100px';
+  
+              var cropBtn = document.createElement('button');
+              cropBtn.textContent = 'Crop';
+              cropBtn.onclick = function() { cropImage(img, index); };
+  
+              var deleteBtn = document.createElement('button');
+              deleteBtn.textContent = 'Delete';
+              deleteBtn.onclick = function() { deleteImage(previewContainer, index); };
+  
+              previewContainer.appendChild(img);
+              previewContainer.appendChild(cropBtn);
+              previewContainer.appendChild(deleteBtn);
+              imagePreview.appendChild(previewContainer);
+          }
+          reader.readAsDataURL(file);
+      });
+  });
+  
+  function cropImage(img, index) {
+      // Initialize Cropper.js here
+      var cropper = new Cropper(img, {
+          aspectRatio: 1,
+          viewMode: 1,
+          ready: function () {
+              // Cropper.js is ready
+              console.log('Cropper.js is ready');
+          }
+      });
+  
+      // Add a button to finalize crop
+      var finalizeCropBtn = document.createElement('button');
+      finalizeCropBtn.textContent = 'Finalize Crop';
+      finalizeCropBtn.onclick = function() {
+          var croppedCanvas = cropper.getCroppedCanvas();
+          img.src = croppedCanvas.toDataURL();
+          cropper.destroy();
+          this.remove(); // Remove the finalize crop button
+      };
+      img.parentNode.appendChild(finalizeCropBtn);
+  }
+  
+  function deleteImage(previewContainer, index) {
+      previewContainer.remove();
+      // Remove the file from the input
+      var input = document.getElementById('images');
+      var files = Array.from(input.files);
+      files.splice(index, 1);
+      
+      // Create a new FileList object (it's read-only)
+      var dataTransfer = new DataTransfer();
+      files.forEach(file => { dataTransfer.items.add(file); });
+      input.files = dataTransfer.files;
+  }
+  </script>
 
-
-
+<link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 
 
 

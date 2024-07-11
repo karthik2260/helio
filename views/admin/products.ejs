@@ -150,7 +150,7 @@
         <div class="userside">
           <div class="row">
             <div class="col-10"><h2 class="me-3 text-decoration-underline">All products</h2></div>
-            <div class="col-2"> <a href="/addproducts" class="bg-dark btn border-shadow shadow update">
+            <div class="col-2"> <a href="/addproduct" class="bg-dark btn border-shadow shadow update">
               <span class="text-white">Add products <b>+</b></span>
           </a></div>
           </div>
@@ -178,8 +178,8 @@
                 </tr>
               </thead>
               <tbody>
-                <% if(products){ %>
-                <%products.forEach((products,index)=>{%>
+                <% if(product){ %>
+                <%product.forEach((products,index)=>{%>
                     <tr>
                         <td><%=index+1%></td>
                         <td><%=products.product_name%></td>
