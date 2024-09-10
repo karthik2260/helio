@@ -36,7 +36,7 @@ const get_add = async (req,res) => {
 
 const user_details = async (req,res) => {
     const allusers = await userdb.find();
-    res.render('admin/Userdetails',{allusers})
+    res.render('admin/userdetails',{allusers})
 }
 
 
