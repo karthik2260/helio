@@ -1,0 +1,121 @@
+<%- include('includes/header') -%>
+
+<!-- navbar -->
+<%- include('includes/navbar') -%>
+
+<style>
+  .celebration-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000000; /* Changed to black */
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    animation: confetti-fall 3s ease-in-out infinite;
+  }
+  
+  @keyframes confetti-fall {
+    0% { transform: translateY(-100vh) rotate(0deg); }
+    100% { transform: translateY(100vh) rotate(720deg); }
+  }
+  
+  .success-card {
+    background: rgba(255, 255, 255, 0.1); /* Made more transparent */
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
+    padding: 40px;
+    text-align: center;
+    max-width: 500px;
+    width: 90%;
+    animation: pop-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    backdrop-filter: blur(10px); /* Added blur effect */
+  }
+  
+  @keyframes pop-in {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  
+  .success-icon {
+    font-size: 80px;
+    color: #ff6b6b;
+    animation: bounce 2s ease infinite;
+  }
+  
+  @keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-30px); }
+    60% { transform: translateY(-15px); }
+  }
+  
+  .success-title {
+    color: #ffffff; /* Changed to white */
+    font-size: 2.5rem;
+    margin: 20px 0;
+    font-weight: bold;
+  }
+  
+  .success-message {
+    color: #cccccc; /* Changed to light gray */
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+  }
+  
+  .continue-shopping-btn {
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 30px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+  }
+  
+  .continue-shopping-btn:hover {
+    background: #ff4757;
+    transform: scale(1.05);
+    box-shadow: 0 7px 14px rgba(255, 107, 107, 0.2), 0 3px 6px rgba(0, 0, 0, 0.1);
+  }
+</style>
+
+<div class="celebration-container" id="celebrationContainer">
+  <div class="success-card">
+    <i class="fas fa-gift success-icon"></i>
+    <h1 class="success-title">Woohoo! Order Placed!</h1>
+    <p class="success-message">Your awesome items are on their way to you. Get ready for some unboxing joy!</p>
+    <a href="/userorders" class="continue-shopping-btn">My orders</a>
+
+  </div>
+</div>
+
+<script>
+  function createConfetti() {
+    const container = document.getElementById('celebrationContainer');
+    for (let i = 0; i < 50; i++) {
+      const confetti = document.createElement('div');
+      confetti.classList.add('confetti');
+      confetti.style.left = Math.random() * 100 + 'vw';
+      confetti.style.animationDelay = Math.random() * 3 + 's';
+      confetti.style.backgroundColor = getRandomColor();
+      container.appendChild(confetti);
+    }
+  }
+
+  function getRandomColor() {
+    const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#5f27cd'];
+    return colors[Math.floor(Math.random() * colors.length)];
+  }
+
+  window.onload = createConfetti;
+</script>
+
+<%- include('includes/footer') -%>

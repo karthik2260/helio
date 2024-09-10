@@ -1,0 +1,484 @@
+<%- include('includes/header') -%>
+
+<!-- navbar -->
+<%- include('includes/navbar') -%>
+
+<div class="container-fluid ms-md-4 mt-4">
+    <div class="row">
+        <%- include('includes/sidebar') -%>
+<!-- //orders -->
+<div class="col-md-9 checkout">
+    <div class="container">
+        <div class="d-flex justify-content-between">
+            <h4>Orders</h4>
+
+        </div>
+
+        <hr>
+        <div class="row">
+            <div class="col-lg-12">
+                <nav>
+                    <div class="nav nav-tabs mb-3">
+                        <button class="nav-link active border-white border-bottom-0" type="button" role="tab"
+                            id="nav-placed-tab" data-bs-toggle="tab" data-bs-target="#nav-placed"
+                            aria-controls="nav-placed" aria-selected="true">Order Placed</button>
+                        <button class="nav-link  border-white border-bottom-0" type="button" role="tab"
+                            id="nav-delivered-tab" data-bs-toggle="tab" data-bs-target="#nav-delivered"
+                            aria-controls="nav-delivered" aria-selected="true">Delivered</button>
+                        <button class="nav-link border-white border-bottom-0" type="button" role="tab"
+                            id="nav-return-requested-tab" data-bs-toggle="tab" data-bs-target="#nav-return-requested"
+                            aria-controls="nav-return-requested" aria-selected="false">Return Requested</button>
+                        <button class="nav-link border-white border-bottom-0" type="button" role="tab"
+                            id="nav-cancelled-tab" data-bs-toggle="tab" data-bs-target="#nav-cancelled"
+                            aria-controls="nav-cancelled" aria-selected="false">Cancelled</button>
+                        <button class="nav-link border-white border-bottom-0" type="button" role="tab"
+                            id="nav-returned-tab" data-bs-toggle="tab" data-bs-target="#nav-returned"
+                            aria-controls="nav-returned" aria-selected="false">Returned</button>
+                    </div>
+                </nav>
+                <div class="tab-content mb-5">
+                    <div class="tab-pane active ms-4" id="nav-placed" role="tabpanel" aria-labelledby="nav-placed-tab">
+                        <% orders.filter(order => order.status === 'Pending' || order.status === 'Shipped' ||order.status==='Order Placed').forEach(order => { %>
+                        <div class="col-md-12 mb-3">
+                            <div class="card shadow">
+                                <a href="/orderDetail/<%= order._id %>" style="text-decoration: none;">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h5 class="card-title text-muted m-2">OrderID. <%= order.orderId %></h5>
+                                        
+                                        <button class="btn btn-danger cancel-order-btn" data-order-id="<%= order._id %>">Cancel Order</button>
+                                       
+                                    </div>
+                                
+                                <div class="card-body">
+                                    <!-- Display payment status with Bootstrap classes -->
+                                    <div class="d-flex">
+                                        <!-- Apply Bootstrap's success or danger class based on payment status -->
+                                        <span class="m-1 font-weight-bold text-<%= order.paymentStatus === 'Completed' ? 'success' : 'danger' %>">Payment Status: <%= order.paymentStatus %></span>
+                                    </div>
+                                    <!-- Display order details -->
+                                    <div class="d-flex">
+                                        <span class="m-1 font-weight-bold">Order Date: <%= new Date(order.orderedDate).toDateString() %></span>
+                                    </div>
+                                    <div class="d-flex">
+                                        <span class="m-1 font-weight-bold">Total Items: <%= order.items.length %></span>
+                                    </div>
+                                    <div class="d-flex">
+                                        <span class="m-1 font-weight-bold">Payment Method: <%= order.paymentMethod %></span>
+                                    </div>
+                                    <div class="d-flex">
+                                        <span class="m-1 font-weight-bold">Total Amount: <%= order.totalAmount %></span>
+                                    </div>
+                                    <!-- Add form for Razorpay payment -->
+                                    <% if (order.paymentStatus === 'Pending') { %>
+                                    
+                                        
+                                        <button i class="btn btn-primary retry-payment-btn" data-order-id="<%= order._id %>">Pay with Razorpay</button>
+                                    
+                                    <% } %>
+                                    <!-- Add more order details here -->
+                                </a>
+                                </div>
+                            </div>
+                        </div>
+                        <% }); %>
+                    </div>
+                    
+                    <div class="tab-pane" id="nav-delivered" role="tabpanel" aria-labelledby="nav-delivered-tab">
+                        <% orders.filter(order => order.status === 'Delivered').forEach(order => { %>
+                            <div class="col-md-12 mb-3">
+                                <a href="/orderDetail/<%= order._id %>" style="text-decoration: none;">
+                                    <div class="card shadow">
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                            <h5 class="card-title text-muted m-2">OrderID. <%= order.orderId %></h5>
+                                            <span class="text-success">Order Delivered</span>
+                                            <button id="return-order-btn" class="btn btn-success return-order-btn" data-order-id="<%= order._id %>">Return</button>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="d-flex">
+                                                <span class="m-1 font-weight-bold">Order Date: <%= new Date(order.orderedDate).toDateString() %></span>
+                                            </div>
+                                            <div class="d-flex">
+                                                <span class="m-1 font-weight-bold">Total Items: <%= order.items.length %></span>
+                                            </div>
+                                            <div class="d-flex">
+                                                <span class="m-1 font-weight-bold">Payment Method: <%= order.paymentMethod %></span>
+                                            </div>
+                                            <div class="d-flex">
+                                                <span class="m-1 font-weight-bold">Total Amount: <%= order.totalAmount %></span>
+                                            </div>
+                                            <form action="/orders/<%= order._id %>/invoice" method="GET">
+                                                <button type="submit" class="btn btn-primary">Download Invoice</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        <% }); %>
+                    </div>
+                    
+                    <style>
+                        /* Ensures the entire card area is clickable */
+                        .card {
+                            cursor: pointer;
+                        }
+                        
+                        /* This is to prevent the button from inheriting the link style */
+                        .card .btn {
+                            cursor: pointer;
+                            pointer-events: auto;
+                        }
+                    </style>
+                    
+                    <div class="tab-pane" id="nav-return-requested" role="tabpanel" aria-labelledby="nav-return-requested-tab">
+                        <% orders.filter(order => order.status === 'Return Requested' || order.status === 'Return Rejected').forEach(order => { %>
+                            <div class="col-md-12 mb-3">
+                                <a href="/orderDetail/<%= order._id %>" style="text-decoration: none;">
+                                    <div class="card shadow">
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                            <h5 class="card-title text-muted m-2">OrderID. <%= order.orderId %></h5>
+                                            <span class="text-success">Order Delivered</span>
+                                            <% if (order.status === 'Return Rejected') { %>
+                                                <span id="cancel-return-btn" class="text-danger">Return canceled</span>
+                                            <% } else { %>
+                                                <button id="cancel-return-btn" class="btn btn-success cancel-return-btn" data-order-id="<%= order._id %>">Cancel Return</button>
+                                            <% } %>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="d-flex">
+                                                <span class="m-1 font-weight-bold">Order Date: <%= new Date(order.orderedDate).toDateString() %></span>
+                                            </div>
+                                            <div class="d-flex">
+                                                <span class="m-1 font-weight-bold">Total Items: <%= order.items.length %></span>
+                                            </div>
+                                            <div class="d-flex">
+                                                <span class="m-1 font-weight-bold">Payment Method: <%= order.paymentMethod %></span>
+                                            </div>
+                                            <div class="d-flex">
+                                                <span class="m-1 font-weight-bold">Total Amount: <%= order.totalAmount %></span>
+                                            </div>
+                                            <form action="/orders/<%= order._id %>/invoice" method="GET">
+                                                <button type="submit" class="btn btn-primary">Download Invoice</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        <% }); %>
+                    </div>
+                    
+                    <style>
+                        /* Ensures the entire card area is clickable */
+                        .card {
+                            cursor: pointer;
+                        }
+                        
+                        /* This is to prevent the button from inheriting the link style */
+                        .card .btn {
+                            cursor: pointer;
+                            pointer-events: auto;
+                        }
+                    
+                        /* Ensures the text for the canceled return is not clickable */
+                        #cancel-return-btn.text-danger {
+                            pointer-events: none;
+                        }
+                    </style>
+                    
+                    <div class="tab-pane" id="nav-cancelled" role="tabpanel" aria-labelledby="nav-cancelled-tab">
+                        <% orders.filter(order => order.status === 'Cancelled').forEach(order => { %>
+                            <div class="col-md-12 mb-3">
+                                <div class="card shadow">
+                                    <a href="/orderDetail/<%= order._id %>" style="text-decoration: none;"> 
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                            <h5 class="card-title text-muted m-2">OrderID. <%= order.orderId %></h5>
+                                            <span class="text-danger">Order Cancelled</span>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="d-flex">
+                                                <span class="m-1 font-weight-bold">Order Date: <%= new Date(order.orderedDate).toDateString() %></span>
+                                            </div>
+                                            <div class="d-flex">
+                                                <span class="m-1 font-weight-bold">Total Items: <%= order.items.length %></span>
+                                            </div>
+                                            <div class="d-flex">
+                                                <span class="m-1 font-weight-bold">Payment Method: <%= order.paymentMethod %></span>
+                                            </div>
+                                            <div class="d-flex">
+                                                <span class="m-1 font-weight-bold">Total Amount: <%= order.totalAmount %></span>
+                                            </div>
+                                            <form action="/orders/<%= order._id %>/invoice" method="GET">
+                                                <button type="submit" class="btn btn-primary">Download Invoice</button>
+                                            </form>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                    
+                    <div class="tab-pane" id="nav-returned" role="tabpanel" aria-labelledby="nav-returned-tab">
+                        <% orders.filter(order => order.status === 'Return Accepted').forEach(order => { %>
+
+                                <div class="col-md-12 mb-3">
+                                    <div class="card shadow">
+                                        <a href="/orderDetail/<%= order._id %>" style="text-decoration: none;">
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                            <h5 class="card-title text-muted m-2">OrderID. <%= order.orderId %></h5>
+                                            <span class="text-danger">Order Returned, Amount Refunded</span>
+                                        </div>
+                                        
+                                        <div class="card-body">
+                                            <div class="d-flex">
+                                                <span class="m-1 font-weight-bold">Order Date: <%= new Date(order.orderedDate).toDateString() %></span>
+                                            </div>
+                                            <div class="d-flex">
+                                                <span class="m-1 font-weight-bold">Total Items: <%= order.items.length %></span>
+                                            </div>
+                                            <div class="d-flex">
+                                                <span class="m-1 font-weight-bold">Payment Method: <%= order.paymentMethod %></span>
+                                            </div>
+                                            <div class="d-flex">
+                                                <span class="m-1 font-weight-bold">Total Amount: <%= order.totalAmount %></span>
+                                            </div>
+                                            
+                                              <form action="/orders/<%= order._id %>/invoice" method="GET">
+                                                <button type="submit" class="btn btn-primary">Download Invoice</button>
+                                              </form>
+                                
+                                            <!-- Add more order details here -->
+                                        </div>
+                                    </div>
+                               
+                                </div>
+                           
+                        <% }); %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('includes/userFooter') -%>
+
+<%- include('includes/footer') -%>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    $(document).ready(function() {
+        // Handler for cancel order button click
+        $('.cancel-order-btn').click(function(e) {
+            e.preventDefault();
+    
+            const orderId = $(this).data('order-id');
+    
+            swal.fire({
+        title: "Are you sure?",
+        text: "Please select a reason for returning the product:",
+        icon: "warning",
+        input: 'select',
+        inputOptions: {
+            'Damaged': 'Product is damaged',
+            'Not as described': 'Product not as described',
+            'Wrong item': 'Received wrong item',
+            'Other': 'Other reason'
+        },
+        inputPlaceholder: 'Select a reason',
+        showCancelButton: true,
+        confirmButtonText: "Yes, return it!",
+        cancelButtonText: "No, keep it"
+            }).then((willCancel) => {
+                if (willCancel.isConfirmed) {
+                    // Send AJAX request to cancel the order
+                    $.ajax({
+                        url: `/cancelOrder/${orderId}`,
+                        type: 'GET',
+                        success: function(response) {
+                            swal.fire("Success!", "Your order has been cancelled.", "success");
+                            console.log(response);
+                            location.reload()
+                        },
+                        error: function(xhr, status, error) {
+                            swal.fire("Error!", "Failed to cancel the order.", "error");
+                            console.error(xhr.responseText);
+                        }
+                    });
+                } else {
+                    swal.fire("Cancelled", "Your order is safe :)", "error");
+                }
+            });
+        });
+    
+        // Handler for return order button click
+        $('.return-order-btn').click(function(e) {
+            e.preventDefault();
+    
+            const orderId = $(this).data('order-id');
+    
+            // Show SweetAlert confirmation dialog
+            swal.fire({
+        title: "Are you sure?",
+        text: "Please select a reason for returning the product:",
+        icon: "warning",
+        input: 'select',
+        inputOptions: {
+            'Damaged': 'Product is damaged',
+            'Not as described': 'Product not as described',
+            'Wrong item': 'Received wrong item',
+            'Other': 'Other reason'
+        },
+        inputPlaceholder: 'Select a reason',
+        showCancelButton: true,
+        confirmButtonText: "Yes, return it!",
+        cancelButtonText: "No, keep it"
+                
+                
+            }).then((willReturn) => {
+                if (willReturn.isConfirmed) {
+                    console.log(orderId);
+                    // Send AJAX request to return the order
+                    $.ajax({
+                        url: `/returnOrder/${orderId}`,
+                        type: 'GET',
+                        success: function(response) {
+                            swal.fire("Success!", "Your order return has been requested.", "success");
+                            console.log(response);
+                            location.reload()
+                            // Handle success response if needed
+                        },
+                        error: function(xhr, status, error) {
+                            swal.fire("Error!", "Failed to return the order.", "error");
+                            console.error(xhr.responseText);
+                            // Handle error response if needed
+                        }
+                    });
+                } else {
+                    swal.fire("Cancelled", "Your order is safe :)", "error");
+                }
+            });
+        });
+    
+        // Handler for cancel return button click
+        $('.cancel-return-btn').click(function(e) {
+            e.preventDefault();
+    
+            const orderId = $(this).data('order-id');
+    
+            // Show SweetAlert confirmation dialog
+            swal.fire({
+                title: "Are you sure?",
+                text: "Once cancelled, you cannot undo this action!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Yes, cancel it!",
+                cancelButtonText: "No, keep it"
+            }).then((willCancel) => {
+                if (willCancel.isConfirmed) {
+                    // Send AJAX request to cancel the return
+                    $.ajax({
+                        url: `/cancelReturn/${orderId}`,
+                        type: 'GET',
+                        success: function(response) {
+                            swal.fire("Success!", "Return request has been cancelled.", "success");
+                            console.log(response);
+                            location.reload()
+                            // Handle success response if needed
+                        },
+                        error: function(xhr, status, error) {
+                            swal.fire("Error!", "Failed to cancel the return request.", "error");
+                            console.error(xhr.responseText);
+                            // Handle error response if needed
+                        }
+                    });
+                } else {
+                    swal.fire("Cancelled", "Your return request is safe :)", "error");
+                }
+
+            });
+        });
+    });
+    document.getElementById('viewOrderBtn').addEventListener('click', () => {
+  const orderId = event.target.textContent;
+  fetch(`/orders/${orderId}/invoice`)
+    .then(response => response.blob())
+    .then(blob => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${orderId}.pdf`;
+      a.click();
+    })
+    .catch(error => {
+      console.error('Error fetching order data:', error);
+    });
+});
+
+
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+    console.log('User order page loaded');
+
+    // Listen for clicks on the Retry Payment buttons
+    document.querySelectorAll('.retry-payment-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const orderId = button.getAttribute('data-order-id');
+            console.log('Retry payment button clicked for order:', orderId);
+
+            // Make a POST request to your backend to initiate retry payment
+            fetch('/retryPayment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ orderId })
+            })
+            .then(res => res.json())
+            .then(res => {
+                if (!res.success) {
+                    console.error('Failed to initiate retry payment:', res.message);
+                    alert('Failed to initiate retry payment.');
+                    return;
+                }
+
+                console.log("Razorpay order data", res);
+                const options = {
+                    "key": "rzp_test_iAqbez4gZElsL0",
+                    "amount": res.order.amount,
+                    "currency": "INR",
+                    "name": 'HELIO',
+                    "description": "Test Transaction",
+                    "image": "",
+                    "order_id": res.order.id,
+                    "callback_url": `/retrysuccess?orderId=${orderId}`, // Corrected callback URL
+                    "prefill": {
+                        // Optional: Prefill customer details
+                    },
+                    "notes": {
+                        "address": "Razorpay Corporate Office"
+                    },
+                    "theme": {
+                        "color": "#3399cc"
+                    }
+                };
+
+                const rzp1 = new Razorpay(options);
+                rzp1.on('payment.failed', function (response) {
+                    console.error("Payment failed:", response);
+                    alert("Payment failed. Redirecting to orders page.");
+
+                    // Redirect to the orders page after a payment failure
+                    window.location.href = '/userorders';
+                });
+
+                rzp1.open();
+            })
+            .catch(error => {
+                console.error("Error in Razorpay payment:", error);
+                alert("An error occurred while processing your payment. Please try again.");
+            });
+        });
+    });
+});
+</script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>

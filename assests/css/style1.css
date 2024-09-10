@@ -1061,7 +1061,7 @@ Hero Media Query
 /* Footer */
 .footer {
   padding: 7rem 1rem;
-  background-color: var(--green);
+  background-color: var(--black);
 }
 
 footer .row {

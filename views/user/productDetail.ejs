@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Box icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/easyzoom/2.5.2/easyzoom.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/easyzoom/2.5.2/easyzoom.js"></script>
+
+  <link rel="stylesheet" href="/assests/css/index.css" />
+  <title>HELIO</title>
+</head>
+<style>
+  
+.product_details-offers h3,
+.product_details-delivery h3 {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.product_details-offer {
+  font-size: 14px;
+}
+.carousel {
+  padding-bottom: 30px;
+}
+.carousel-item {
+  overflow: hidden;
+}
+
+.product-view-main-image {
+  transition: transform 0.5s ease;
+}
+
+.carousel-item:hover .product-view-main-image {
+  transform: scale(3.5);
+}
+.product-center {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between; /* Or use space-around */
+}
+
+.product-item {
+  flex: 1 1 calc(25% - 20px); /* 4 items per row with some margin */
+  margin: 10px;
+  border: 1px solid #ccc; /* Stroke */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Shadow */
+  transition: box-shadow 0.3s ease; /* Smooth transition for shadow */
+}
+
+.product-item:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Shadow on hover */
+}
+
+.product-item .overlay {
+  position: relative;
+}
+
+.product-item .product-thumb img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.product-item .product-info {
+  padding: 15px;
+}
+
+.product-item .product-info span a {
+  color: #333;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.product-item .product-info h4,
+.product-item .product-info h5 {
+  margin: 10px 0;
+}
+
+.product-item .icons {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  justify-content: space-around;
+  margin: 10px 0 0;
+}
+
+.product-item .icons li {
+  display: inline-block;
+  cursor: pointer;
+}
+
+.product-item .icons li i {
+  font-size: 20px;
+  color: #333;
+}
+
+.product-center {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Four columns per row */
+    gap: 20px; /* Space between items */
+  }
+
+  .product-item {
+    display: flex;
+    flex-direction: column; /* Arrange children vertically */
+    justify-content: space-between; /* Distribute space evenly */
+    height: 100%; /* Ensure all items have the same height */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adding shadow */
+    border: 1px solid #ddd; /* Adding border */
+    padding: 10px; /* Adding padding */
+    background-color: #fff; /* Background color */
+  }
+
+  .overlay img {
+    width: 100%; /* Ensure images fit their container */
+    height: auto;
+  }
+
+  .product-info {
+    text-align: center; /* Center text inside product info */
+    flex-grow: 1; /* Allow product info to grow and take up available space */
+  }
+
+  .icons {
+    display: flex;
+    justify-content: space-around; /* Distribute icons evenly */
+    list-style: none;
+    padding: 0;
+    margin-top: 10px; /* Add some space above the icons */
+  }
+  .navigation {
+  background-color: white; /* Optional: Set background color for contrast */
+}
+
+.navigation .nav-center {
+  justify-content: center;
+}
+
+.navigation .nav-list {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.navigation .nav-link,
+.navigation .logo h1,
+.navigation .icon,
+.navigation .hamburger i {
+  color: black; /* Change font color to black */
+}
+
+  .icons li {
+    display: inline;
+  }
+
+  .product_details-original-price {
+    text-decoration: line-through;
+    color: gray;
+  }
+
+  .product_details-discount {
+    color: green;
+  }
+</style>
+<body>
+  <!-- Navigation -->
+  <div class="navigation">
+    <div class="nav-center container d-flex">
+      <a href="/" class="logo">
+        <h1>HELIO</h1>
+      </a>
+
+      <ul class="nav-list d-flex">
+        <li class="nav-item">
+          <a href="/" class="nav-link">Home</a>
+        </li>
+
+
+        <li class="nav-item">
+          <a href="#about" class="nav-link">About</a>
+        </li>
+        <li class="nav-item">
+          <a href="#contact" class="nav-link">Contact</a>
+        </li>
+
+      </ul>
+     
+
+      <div class="icons d-flex">
+        <a href="/profile" class="icon">
+          <i class="bx bx-user"></i>
+        </a>
+
+        <div class="icon">
+          <a href="/wishlisted">
+            <i class="bx bx-heart"></i></a>
+          <span class="d-flex">
+            <%=wishCount %>
+          </span>
+        </div>
+        <a href="/cart" class="icon">
+          <i class="bx bx-cart"></i>
+          <span class="d-flex">
+            <%=cartCount%>
+          </span>
+        </a>
+      </div>
+
+      <div class="hamburger">
+        <i class="bx bx-menu-alt-left"></i>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <!-- Product Details -->
+  <section class="section product-detail">
+    <div class="details container">
+      <div class="left image-container">
+        <div class="main">
+          <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+              <% product.images.forEach((image, index) => { %>
+              <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="<%= index %>" class="<%= index === 0 ? 'active' : '' %>" aria-current="<%= index === 0 ? 'true' : 'false' %>" aria-label="Slide <%= index + 1 %>"></button>
+              <% }) %>
+            </div>
+            <div class="carousel-inner">
+              <% product.images.forEach((image, index) => { %>
+              <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                <img src="/<%= image %>" class="d-block w-100 product-view-main-image" alt="">
+              </div>
+              <% }) %>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
+          <span class="form">
+            <a href="/cart/<%=product._id %>" class="addCart">Add To Cart</a>
+          </span>
+          
+          <span class="form">
+            <a href="/wishlist/<%=product._id %>" class="addCart">Add Wishlist</a>
+          </span>
+        </div>
+      </div>
+      <div class="right">
+        <h1><%= product.product_name %></h1>
+        <% if (product.offerPrice && product.offerPrice < product.price) { %>
+          <h4 class="product_details-offer-price">&#8377;<%= product.offerPrice %></h4>
+          <span class="product_details-original-price" style="text-decoration: line-through;">M.R.P.: &#8377;<%= product.price %></span>
+          <span class="product_details-discount">(<%= Math.round(((product.price - product.offerPrice) / product.price) * 100) %> % off)</span>
+
+        <% } else { %>
+          <h4 class="product_details-offer-price">&#8377;<%= product.price  %></h4>
+        <% } %>
+  
+      
+        <form action="/cart" method="post">
+          <div>
+            <!-- <select>
+              <option value="Select Size" selected disabled>Select Size</option>
+              <option value="M">M</option>
+              <option value="L">L</option>
+              <option value="XL">XL</option>
+              <option value="XXL">XXL</option>
+            </select> -->
+            <!-- <span><i class="bx bx-chevron-down"></i></span> -->
+          </div>
+        </form>
+        
+        <div class="product_details-offers" style="margin-top: 20px; border-top: 1px solid #f0f0f0; padding-top: 15px;">
+          <h3 style="font-size: 16px; font-weight: 500; margin-bottom: 10px;">Available offers</h3>
+          <ul class="product_details-offers-list" style="list-style-type: none; padding-left: 0;">
+            <li class="product_details-offer" style="margin-bottom: 10px;">
+              <img src="/assests/img/discounts.png" alt="Discount Icon" style="width: 18px; margin-right: 10px;">
+              <span style="font-size: 14px;">Get 50% instant discount on HELIO transaction on order of ₹2500 and above</span>
+              <a href="#" style="color: #2874f0; font-weight: 500; margin-left: 5px;">T&C</a>
+            </li>
+          
+            <li class="product_details-offer" style="margin-bottom: 10px;">
+              <img src="/assests/img/coupon.png" alt="Discount Icon" style="width: 18px; margin-right: 10px;">
+              <span style="font-size: 14px;">Coupons soon Freekip</span>
+            </li>
+          </ul>
+        </div>
+        <h3>Product Detail</h3>
+        <p> <%= product.description %></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Related -->
+  <section class="section featured">
+    <div class="top container">
+      <h1>Related Products</h1>
+      <a href="#" class="view-more">View more</a>
+    </div>
+    <div class="product-center container">
+      <% products.forEach(product=>{%>
+        <div class="product-item">
+          <div class="overlay">
+            <a href="/productdetail/<%= product._id %>" class="product-thumb">
+              <img src="/<%=product.images[0] %>" alt="" />
+            </a>
+          </div>
+          <div class="product-info">
+            <span><a href="/productdetail/<%= product._id %>"><%= product.product_name %></a></span>
+          
+            <% if (product.offerPrice && product.offerPrice < product.price) { %>
+              <!-- If an offer price is available and lower than the original price -->
+              <h4 class="product_details-offer-price">&#8377;<%= product.offerPrice %></h4>
+              <span class="product_details-original-price">M.R.P.: &#8377;<%= product.price %></span>
+              <span class="product_details-discount">(<%= Math.round(((product.price - product.offerPrice) / product.price) * 100) %> % off)</span>
+              
+            
+            <% } else { %>
+              <!-- If no offer or discount, just show the regular price -->
+              <h4 class="product_details-offer-price">&#8377;<%= product.price %></h4>
+              
+            <% } %>
+          
+            <h4><%= product.brand %></h4>
+          </div>
+          <ul class="icons">
+            <% if (wishlist && wishlist.items.some(items=>items.productId.toString()===product._id.toString())) { %>
+              <li style="background-color: brown;"><a href="/wishlisted"><i class="bx bx-heart"></i></a></li>
+              <% } else { %>
+                <li  ><a href="wishlist/<%=product._id %>"><i class="bx bx-heart" ></i></a></li>
+                <% } %>
+            <li><a href="cart/<%=product._id %>"><i class="bx bx-cart"></i></a></li>
+          </ul>
+        </div>
+        <%}) %>
+      </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="row">
+      <div class="col d-flex">
+        <h4>INFORMATION</h4>
+        <a href="#">About us</a>
+        <a href="#">Contact Us</a>
+        <a href="#">Term & Conditions</a>
+        <a href="#">Shipping Guide</a>
+      </div>
+      <div class="col d-flex">
+        <h4>USEFUL LINK</h4>
+        <a href="#">Online Store</a>
+        <a href="#">Customer Services</a>
+        <a href="#">Promotion</a>
+        <a href="#">Top Brands</a>
+      </div>
+      <div class="col d-flex">
+        <span><i class="bx bxl-facebook-square"></i></span>
+        <span><i class="bx bxl-instagram-alt"></i></span>
+        <span><i class="bx bxl-github"></i></span>
+        <span><i class="bx bxl-twitter"></i></span>
+        <span><i class="bx bxl-pinterest"></i></span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Custom Script -->
+  <script src="https://code.jquery.com/jquery-3.4.0.min.js" integrity="sha384-JUMjoW8OzDJw4oFpWIB2Bu/c6768ObEthBMVSiIx4ruBIEdyNSUQAjJNFqT5pnJ6" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/assests/js/userSoom.js"></script>
+  <script>
+    $(function () {
+      console.log("hello");
+      $("#zoom").imagezoomsl({
+        zoomrange: [4, 4],
+      });
+    });
+  </script>
+  
+</body>
+</html>

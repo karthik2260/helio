@@ -22,7 +22,7 @@
   <!-- CSS Files -->
   <link id="pagestyle" href="/assests/css/category.css" rel="stylesheet" />
   <!-- DataTable -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css">
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap4.min.css" />
   
 <script src="https://code.jquery.com/jquery-3.7.0.js"></script>    
@@ -34,6 +34,9 @@
   <script defer data-site="YOUR_DOMAIN_HERE" src="https://api.nepcha.com/js/nepcha-analytics.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.1.0/cropper.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.1.0/cropper.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
 </head>
 <style>
     .object-fit-cover{
@@ -117,7 +120,7 @@
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-white" href="/coupons">
+              <a class="nav-link text-white" href="/coupon">
                 <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                   <i class="material-icons opacity-10">redeem</i> <!-- Material icon for a coupon -->
                 </div>
@@ -215,11 +218,14 @@
                 </div>
                 <input type="file" class="form-control" id="images" name="images" onchange="previewImages(event)" multiple>
               </div>
-              <div class="mb-3">
-                <label for="stat" class="form-label">Description:</label>
-                <textarea class="form-control" id="stat" name="stat"><%= pro_get.description %></textarea>
-              </div>
-              <button type="submit" id="update_user" class="btn btn-primary">Submit</button>
+              <form action="/admin/products/<%= pro_get._id %>" method="POST">
+                <div class="mb-3">
+                    <label for="stat" class="form-label">Description:</label>
+                    <textarea class="form-control" id="stat" name="description"><%= pro_get.description %></textarea>
+                </div>
+                <button type="submit" id="update_user" class="btn btn-primary">Submit</button>
+            </form>
+            
             </form>
           </div>
         </div>
@@ -247,6 +253,16 @@
       </div>
     </div>
   </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+
+  <script src="/path/to/cropper.js"></script>
+  <script src="/assests/js/material-dashboard.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
   <script>
     let cropper;
@@ -374,15 +390,6 @@
   <!-- Github buttons -->
   <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
    <!-- Cropper.js JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 
-  <script src="/path/to/cropper.js"></script>
-  <script src="/js/material-dashboard.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </body>
 </html>

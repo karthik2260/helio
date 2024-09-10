@@ -1,22 +1,20 @@
-const mongoose=require('mongoose')
+const mongoose = require('mongoose');
 
-
-const Categoryschema= new mongoose.Schema({
-    CategoryName:{
-        type:String,
-        required:true
+const categorySchema = new mongoose.Schema({
+    CategoryName: {
+        type: String,
+        required: true,
+        unique: true
     },
-    list:{
-        type:String,
-        enum:["listed","unlisted"],
-        default:"listed"
+    discription: {
+        type: String,
     },
-    discription:{
-        type:String
+    image: {
+        type: String, // You can store the path of the image as a string
+        required: true
     }
-})
+});
 
+const Categorydb = mongoose.model('Categorydb', categorySchema);
 
-const Categorydb=mongoose.model('Categorydb',Categoryschema)
-
-module.exports=Categorydb;
+module.exports = Categorydb;

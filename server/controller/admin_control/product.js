@@ -10,7 +10,6 @@ const list = async (req,res) => {
         const categories = await Categorydb.find();
         
         const product = await productdb.find().populate('Category')
-        console.log('product',product);
        
         res.render('admin/products',{categories,product})
     }catch (err) {
@@ -40,9 +39,10 @@ const images = req.files.map(file=>file.path);
 
 
 const price=parseInt(req.body.price);
-console.log(req.body);
+// console.log(req.body);
 const discount=parseInt(req.body.discount)||0
 if(isNaN(price)||isNaN(discount)){
+    
     res.render('admin/err500');
     return;
 }
@@ -52,12 +52,12 @@ try{
    
     const Category = await Categorydb.findById(categoryId)
     
-    console.log(Category,"category");
+    // console.log(Category,"category");
     if(!Category){
         res.status(400).send({messege:'category not found'})
         return
     }
-    console.log("saving side");
+    // console.log("saving side");
     const product = new productdb({
         product_name: req.body.product_name,
         Category: Category,
@@ -70,6 +70,7 @@ try{
         stock: req.body.stock,
         images: images,
         total_price: totalprice,
+       
 
 
     })
@@ -129,11 +130,17 @@ const post_edit = async (req,res) => {
     try {
         const productId = req.params.id;
         const updateData = req.body;
+        console.log(req.body,"ptojn,j");
+        
         const images = req.files;
+        const videos = req.files;
 
         const updatedproduct = await productdb.findByIdAndUpdate(productId,updateData,{new : true})
         if(images && images.length > 0 ){
             updatedproduct.images = updatedproduct.images.concat(images.map(image => image.path))
+        }else {
+            const video = req.files['video'] ? req.files['video'][0].path : null;
+
         }
 
         await updatedproduct.save();

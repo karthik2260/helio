@@ -1,4 +1,4 @@
-<%-include('includes/index_header')-%>
+<%- include('includes/index_header') %>
 <style>
   .background-video-container {
     position: relative;
@@ -15,45 +15,40 @@
     height: 100%;
     object-fit: cover;
     transform: translate(-50%, -50%);
+    
   }
-  </style>
+</style>
 <!-- Header -->
 <header class="header" id="header">
-  <!-- Top Nav -->
-  <!-- <div class="top-nav">
-    <div class="container d-flex">
-      <ul class="d-flex">
-        <li><a href="#">About Us</a></li>
-        <li><a href="#">FAQ</a></li>
-        <li><a href="#">Contact</a></li>
-      </ul>
-    </div>
-  </div> -->
   <div class="navigation">
     <div class="nav-center container d-flex">
-      <a href="/home" class="logo"><h1>HELIO</h1></a>
+      <a href="/" class="logo"><h1>HELIO</h1></a>
       <ul class="nav-list d-flex">
-        <li class="nav-item"><a href="/home" class="nav-link">Home</a></li>
+        <li class="nav-item"><a href="/" class="nav-link">Home</a></li>
         <li class="nav-item"><a href="/prod" class="nav-link">Shop</a></li>
         <li class="nav-item"><a href="#terms" class="nav-link">Terms</a></li>
         <li class="nav-item"><a href="#about" class="nav-link">About</a></li>
         <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
-        <li class="icons d-flex">
-          <a href="/profile" class="icon"><i class="bx bx-user"></i></a>
-          <div class="icon"><i class="bx bx-search"></i></div>
-          <a href="/wishlisted">
-            <div class="icon"><i class="bx bx-heart"></i><span class="d-flex">0</span></div>
-          </a>
-          <a href="/cart" class="icon"><i class="bx bx-cart"></i><span class="d-flex"></span></a>
-        </li>
+   
       </ul>
       <div class="icons d-flex">
         <a href="/profile" class="icon"><i class="bx bx-user"></i></a>
-        <div class="icon"><i class="bx bx-search"></i></div>
-        <a href="/wishlisted">
-          <div class="icon"><i class="bx bx-heart"></i></div>
+        <div class="icon">
+          <a href="/wishlisted">
+            <i class="bx bx-heart"></i></a>
+          <span class="d-flex">
+            <%=wishCount %>
+          </span>
+        </div>
+        <a href="/cart" class="icon">
+          <i class="bx bx-cart"></i>
+          <span class="d-flex">
+            <%=cartCount%>
+          </span>
         </a>
-        <a href="/cart" class="icon"><i class="bx bx-cart"></i></a>
+        <% if (userToken) { %>
+          <a href="/logout"><i class="ion-log-in"></i> Logout</a>
+        <% } %>
       </div>
       <div class="hamburger"><i class="bx bx-menu-alt-left"></i></div>
     </div>
@@ -62,45 +57,26 @@
   <!-- Background Video Section -->
   <div class="background-video-container">
     <video autoplay muted loop id="background-video">
-      <source src="/assests/video/mac.mp4" type="video/mp4">
+      <source src="/assests/video/maccccccccccccccccccccc.mp4" type="video/mp4">
       Your browser does not support the video tag.
     </video>
   </div>
-
-  <!-- <div class="hero">
-    <div class="glide" id="glide_1">
-      <div class="glide__track">
-        <div class="glide__slides"> -->
-          <!-- Add your slides here -->
-        <!-- </div>
-      </div>
-    </div>
-  </div> -->
 </header>
 
 <!-- Categories Section -->
 <section class="section category">
   <div class="cat-center">
-    <a href="/business">
-      <div class="cat">
-        <img src="/assests/img/Apple-Macbook-air-scaled.jpg" alt="" />
-        <div><p>BUSINESS</p></div>
-      </a>
-    </div>
-    <div class="cat">
-      <a href="/gaming">
-        <img src="/assests/img/Lenovo-ideapad-gaming-laptop-scaled.jpg" alt="" />
-        <div><p>GAMING</p></div>
-      </a>
-    </div>
-    <div class="cat">
-      <a href="/convertible">
-        <img src="/assests/img/HP-Spectre-14x360-1-scaled.jpg" alt="" />
-        <div><p>CONVERTIBLE</p></div>
-      </a>
-    </div>
+    <% Categories.forEach(category => { %>
 
-   
+    <a href="/category/<%=category._id %>">
+      <div class="cat">
+        <img src="<%= category.image %>" alt="" />
+        <div><p><%=category.CategoryName %></p></div>
+      </div>
+    </a>
+
+    <% }) %>
+  </div>
 </section>
 
 <!-- New Arrivals -->
@@ -113,21 +89,54 @@
     <% products.forEach(product => { %>
     <div class="product-item">
       <div class="overlay">
-        <a href="productdetail?id=<%= product._id %>" class="product-thumb">
+        <a href="/productdetail/<%= product._id %>" class="product-thumb">
           <img src="<%= product.images[0] %>" alt="" />
         </a>
       </div>
       <div class="product-info">
-        <span><a href="/productdetail?id=<%= product._id %>"><%= product.product_name %></a></span>
-        <h5>&#8377 <%= product.price %></h5>
+        <span><a href="/productdetail/<%= product._id %>"><%= product.product_name %></a></span>
+      
+        <% if (product.offerPrice && product.offerPrice < product.price) { %>
+          <!-- If an offer price is available and lower than the original price -->
+          <h4 class="product_details-offer-price">&#8377;<%= product.offerPrice %></h4>
+          
+          <!-- Original price with strikethrough -->
+          <span class="product_details-original-price" style="text-decoration: line-through;">M.R.P.: &#8377;<%= product.price %></span>
+          
+          <!-- Discount percentage -->
+          <span class="product_details-discount">(<%= Math.round(((product.price - product.offerPrice) / product.price) * 100) %> % off)</span>
+        <% } else { %>
+          <!-- If no offer or discount, just show the regular price -->
+          <h4 class="product_details-offer-price">&#8377;<%= product.price %></h4>
+        <% } %>
+        
+      
         <h4><%= product.brand %></h4>
-      </div>
-      <ul class="icons">
-        <li style="background-color: brown;"><i class="bx bx-heart"></i></li>
-        <li><i class="bx bx-heart"></i></li>
-        <li><a href="/productdetail?id=<%= product._id %>"><i class="bx bx-search"></i></a></li>
-        <li><a href="cart/<%= product._id %>"><i class="bx bx-cart"></i></a></li>
-      </ul>
+    </div>
+    <ul class="icons">
+      <!-- Wishlist Icon -->
+      <% if (wishlist && wishlist.items && wishlist.items.some(item => item.productId.toString() === product._id.toString())) { %>
+        <a href="/wishlisted">
+          <li style="background-color: brown;"><i class="bx bx-heart"></i></li>
+        </a>
+      <% } else { %>
+        <a href="/wishlist/<%= product._id %>">
+          <li><i class="bx bx-heart"></i></li>
+        </a>
+      <% } %>
+    
+      <!-- Cart Icon -->
+      <% if (cart && cart.items && cart.items.some(item => item.productId.toString() === product._id.toString())) { %>
+        <li style="background-color: green;">
+          <a href="/cart"><i class="bx bx-cart"></i></a>
+        </li>
+      <% } else { %>
+        <li>
+          <a href="/cart/<%= product._id %>"><i class="bx bx-cart"></i></a>
+        </li>
+      <% } %>
+    </ul>
+    
     </div>
     <% }) %>
   </div>
@@ -141,34 +150,57 @@
     <p>New Arrival <span class="color">Sale 50% OFF</span> Limited Time Offer</p>
   </div>
   <div class="right">
-    <img src="/assests/img/design_portability_1__gfw34rh367u6_large.jpg" alt="">
+    <img src="/" alt="">
   </div>
 </section>
 
-
 <!-- Featured -->
+<!-- New Arrivals -->
 <section class="section new-arrival">
-  <div class="title">
-    <h1>Featured</h1>
+  <div class="title"> 
+    <h1>NEW ARRIVALS</h1>
     <p>All the latest picked from designer of our store</p>
   </div>
   <div class="product-center">
     <% products.forEach(product => { %>
     <div class="product-item">
       <div class="overlay">
-        <a href="productdetail?id=<%= product._id %>" class="product-thumb">
+        <a href="/productdetail/<%= product._id %>" class="product-thumb">
           <img src="<%= product.images[0] %>" alt="" />
         </a>
       </div>
       <div class="product-info">
-        <span><a href="/productdetail?id=<%= product._id %>"><%= product.product_name %></a></span>
-        <h5>&#8377 <%= product.price %></h5>
+        <span><a href="/productdetail/<%= product._id %>"><%= product.product_name %></a></span>
+      
+        <% if (product.offerPrice && product.offerPrice < product.price) { %>
+          <!-- If an offer price is available and lower than the original price -->
+          <h4 class="product_details-offer-price">&#8377;<%= product.offerPrice %></h4>
+          
+          <!-- Original price with strikethrough -->
+          <span class="product_details-original-price" style="text-decoration: line-through;">M.R.P.: &#8377;<%= product.price %></span>
+          
+          <!-- Discount percentage -->
+          <span class="product_details-discount">(<%= Math.round(((product.price - product.offerPrice) / product.price) * 100) %> % off)</span>
+        <% } else { %>
+          <!-- If no offer or discount, just show the regular price -->
+          <h4 class="product_details-offer-price">&#8377;<%= product.price %></h4>
+        <% } %>
+        
+      
         <h4><%= product.brand %></h4>
       </div>
+      
       <ul class="icons">
-        <a href="wishlist/<%= product._id %>"><li style="background-color: brown;"><i class="bx bx-heart"></i></li></a>
-        <li><a href="/productdetail?id=<%= product._id %>"><i class="bx bx-search"></i></a></li>
-        <li><a href="cart/<%= product._id %>"><i class="bx bx-cart"></i></a></li>
+        <% if (wishlist && wishlist.items && wishlist.items.some(item => item.productId.toString() === product._id.toString())) { %>
+          <a href="/wishlisted">
+            <li style="background-color: brown;"><i class="bx bx-heart"></i></li>
+          </a>
+        <% } else { %>
+          <a href="/wishlist/<%= product._id %>">
+            <li><i class="bx bx-heart"></i></li>
+          </a>
+        <% } %>
+        <li><a href="/cart/<%= product._id %>"><i class="bx bx-cart"></i></a></li>
       </ul>
     </div>
     <% }) %>
@@ -202,10 +234,7 @@
   </div>
 </footer>
 
-</body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.4.1/glide.min.js"></script>
 <script src="/assests/js/index.js"></script>
 <script src="/assests/js/slider.js"></script>
 </html>
-
-

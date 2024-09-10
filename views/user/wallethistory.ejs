@@ -1,0 +1,78 @@
+<%- include('includes/header') -%>
+
+<!-- navbar -->
+<%- include('includes/navbar') -%>
+<div class="container-fluid ms-md-4 mt-4">
+    <div class="row">
+<%- include('includes/sidebar') -%>
+
+
+        
+<!-- //orders -->
+<div class="col-md-9 checkout">
+  <div class="container">
+      <div class="d-flex justify-content-"between>
+          <h4>Wallet History</h4>
+      </div>
+      <hr>
+      <!-- wallet history  -->
+      <table class="table overflow-x-scroll">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Transaction Type</th>
+                <th>Amount</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <% walletHistory.transactions.forEach(wallet => { %>
+                <tr>
+                    <td><%= wallet.timestamp.toDateString() %></td>
+                    <td><%= wallet.type %></td>
+                    <td>
+                        <% if (wallet.type === 'refund') { %>
+                            <span class="text-success">+ <%= wallet.amount %></span>
+                        <% } else if (wallet.type === 'withdrawal') { %> <!-- Corrected spelling -->
+                            <span class="text-danger">- <%= wallet.amount %></span>
+                        <% } %>
+                    </td>
+                    <td><%= wallet.order %></td>
+                    <td><%= wallet.state %></td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+    
+  </div>
+</div>
+</div>
+</div>
+
+<%- include('includes/userFooter') -%>
+
+<%- include('includes/footer') -%>
+<script>
+    $(document).ready(function() {
+        $('.delete').click(function() {
+            const itemId = $(this).data('id');
+            deleteFromWishlist(itemId);
+        });
+
+        function deleteFromWishlist(itemId) {
+            $.ajax({
+                url: `/wishlist/${itemId}`,
+                type: 'DELETE',
+                success: function(response) {
+                    console.log(response.message);
+                    // Remove the deleted item from the DOM
+                    $(`[data-id="${itemId}"]`).closest('tr').remove();
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error:', error);
+                }
+            });
+        }
+    });
+</script>

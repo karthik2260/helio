@@ -1,0 +1,378 @@
+<%- include('includes/header') -%>
+
+<!-- navbar -->
+<%- include('includes/navbar') -%>
+<div class="container-fluid ms-md-4 mt-4">
+    <div class="row">
+<%- include('includes/sidebar') -%>
+
+
+    <!-- Main Cart Content -->
+    <div class="col-md-9">
+      <% if (!usercart || usercart.items.length === 0) { %>
+        <div class="container cart">
+          <div class="empty-cart">
+            <div class="empty-icon">
+              <div class="circle"></div>
+              <i class="fa-solid fa-shopping-bag"></i>
+            </div>
+            <h1>Your cart is empty.</h1>
+            <p>Add items to your cart to see them here!</p>
+          </div>
+        </div>
+        
+        <!-- Custom CSS -->
+        <style>
+          .empty-cart {
+            text-align: center;
+            margin-top: 50px;
+            animation: fadeIn 1.5s ease-in-out;
+            position: relative;
+          }
+        
+          .empty-icon {
+            position: relative;
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+          }
+        
+          .empty-icon .circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(45deg, #f3ec78, #af4261);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: rotate 6s linear infinite;
+          }
+        
+          .empty-icon i {
+            font-size: 100px;
+            color: white;
+            position: relative;
+            z-index: 1;
+            animation: pulse 2s infinite;
+          }
+        
+          .empty-cart h1 {
+            font-size: 28px;
+            color: #444;
+            margin-top: 20px;
+          }
+        
+          .empty-cart p {
+            font-size: 18px;
+            color: #777;
+            margin-top: 10px;
+          }
+        
+          @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+          }
+        
+          @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+          }
+        
+          @keyframes rotate {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+          }
+        
+          @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+          }
+        </style>
+        
+        </div>
+      <% } else { %>
+        <div class="row">
+          <!-- Cart Items -->
+          <div class="col-md-12 order-md-1">
+            <div class="cart-items">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% usercart.items.forEach((item, index) => { %>
+                    <tr>
+                      <td>
+                        <div class="cart-info">
+                          <img src="<%= item.productId.images[0] %>" alt="" />
+                          <div>
+                            <span><%= item.productId.product_name %></span> <br />
+                            <a href="remove/<%= item.productId._id %>">remove <i class="fa-solid fa-trash"></i></a>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <% if(item.productId.stock > 0) { %>
+                          <div class="quantity">
+                            <button class="quantity-btn btn2" onclick="quantity('dec', <%= JSON.stringify(item) %>)">-</button>
+                            <input type="number" id="quantity-<%= item.productId._id %>" value="<%= item.quantity %>" min="1" readonly />
+                            <button class="quantity-btn" onclick="quantity('inc', <%= JSON.stringify(item) %>)">+</button>
+                          </div>
+                        <% } else { %>
+                          <p>Out of Stock</p>
+                        <% } %>
+                      </td>
+                      <% let subtotal = parseFloat(item.productId.offerPrice) * parseInt(item.quantity) %>
+
+                      <td id="total_price_<%= item.productId._id %>">&#8377;<%= subtotal %></td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Total Price and Checkout -->
+         <!-- Total Price and Checkout -->
+<div class="col-md-12 order-md-2 mt-4">
+  <div class="total-price">
+    <table class="table table-bordered">
+      <tbody>
+        <tr>
+          <td class="text-left">Total</td>
+          <td id="total_amount" class="text-right">&#8377;<%= usercart.totalAmount %></td>
+        </tr>
+      </tbody>
+    </table>
+    <p id="checkout-button" class="btn btn-primary btn-block">Proceed To Checkout</p>
+  </div>
+</div>
+
+      <% } %>
+      
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="row">
+    <div class="col d-flex">
+      <h4>INFORMATION</h4>
+      <a href="">About us</a>
+      <a href="">Contact Us</a>
+      <a href="">Term & Conditions</a>
+      <a href="">Shipping Guide</a>
+    </div>
+    <div class="col d-flex">
+      <h4>USEFUL LINK</h4>
+      <a href="">Online Store</a>
+      <a href="">Customer Services</a>
+      <a href="">Promotion</a>
+      <a href="">Top Brands</a>
+    </div>
+    <div class="col d-flex">
+      <span><i class="bx bxl-facebook-square"></i></span>
+      <span><i class="bx bxl-instagram-alt"></i></span>
+      <span><i class="bx bxl-github"></i></span>
+      <span><i class="bx bxl-twitter"></i></span>
+      <span><i class="bx bxl-pinterest"></i></span>
+    </div>
+  </div>
+</footer>
+
+<!-- Custom CSS -->
+<style>
+  /* Add some spacing between the product list and the order summary */
+  .total-price {
+    margin-top: 20px;
+  }
+
+  /* Adjust button styles to decrease size */
+  /* Adjust button styles to decrease size */
+  #checkout-button {
+    display: block;
+    width: 50%; /* Reduced width */
+    padding: 10px;
+    font-size: 0.9em; /* Smaller font size */
+    text-align: center;
+    background-color: #277f11;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    margin: 20px auto;
+}
+
+#checkout-button:hover {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+/* Additional styles for cart appearance */
+.cart-items table {
+    width: 100%; /* Full width for the table */
+    border-collapse: collapse;
+}
+
+.cart-items table th,
+.cart-items table td {
+    padding: 10px; /* Reduced padding */
+    font-size: 0.9em; /* Smaller font size */
+    text-align: center; /* Centered text */
+    border: 1px solid #dee2e6; /* Add border to table cells */
+}
+
+.cart-info {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center the content */
+}
+
+.cart-info img {
+    width: 40px; /* Smaller image size */
+    height: auto; /* Maintain aspect ratio */
+    margin-right: 10px; /* Reduced margin */
+}
+
+.cart-info div {
+    display: inline-block;
+    text-align: left; /* Left align the text */
+}
+
+.quantity {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.quantity input {
+    width: 50px; /* Smaller input box */
+    text-align: center;
+    font-size: 0.9em; /* Smaller font size */
+    padding: 5px;
+    border: 1px solid #ccc;
+    margin: 0 5px;
+}
+
+.quantity-btn {
+    padding: 5px 8px; /* Reduced button padding */
+    font-size: 0.9em; /* Smaller font size */
+    border: 1px solid #ccc;
+    background-color: #f8f8f8;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.quantity-btn:hover {
+    background-color: #e9ecef;
+}
+
+.total-price table {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.total-price {
+    display: flex;
+    justify-content: center; /* Centers the div horizontally */
+    align-items: center; /* Centers the content vertically (if there's a height set) */
+    padding: 10px;
+    font-size: 0.9em;
+}
+
+</style>
+
+<!-- Custom Script -->
+<script src="/assests/js/index.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  const userData = <%- JSON.stringify(usercart) %>;
+
+  const updateTotalAmount = () => {
+    let totalAmount = 0;
+    document.querySelectorAll('.cart-items table tr').forEach((row) => {
+      let priceElement = row.querySelector('td:nth-child(3)');
+      if (priceElement) {
+        let subtotal = parseFloat(priceElement.innerText.replace('₹', ''));
+        totalAmount += subtotal;
+      }
+    });
+    document.getElementById('total_amount').innerText = `₹${totalAmount}`;
+  };
+
+  const quantity = async (type, item) => {
+    let quantityElement = document.getElementById(`quantity-${item.productId._id}`);
+    let totalPriceElement = document.getElementById(`total_price_${item.productId._id}`);
+    let quantityValue = parseInt(quantityElement.value);
+
+    if (type === 'inc') {
+      if (quantityValue < item.productId.stock) {
+        quantityValue++;
+      } else {
+        Swal.fire({
+          title: 'Stock Exceeded!',
+          text: 'Cannot add more than available Stock',
+          icon: 'warning',
+          confirmButtonText: 'OK'
+        });
+        return;
+      }
+    } else {
+      if (quantityValue > 1) {
+        quantityValue--;
+      }
+    }
+
+    quantityElement.value = quantityValue;
+    let totalPrice = quantityValue * item.productId.offerPrice;
+    totalPriceElement.innerText = `₹${totalPrice}`;
+
+    try {
+      const res = await fetch(`/up-quantity/${item.productId._id}`, {
+        method: "PUT",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ quantity: quantityValue })
+      }).then(response => response.json());
+
+      if (res.message === 'changed') {
+        const res = await fetch('/up-amount', {
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }).then(response => response.json());
+
+        if (res.message === 'update') {
+          updateTotalAmount();
+        }
+      }
+    } catch (error) {
+      console.error('Error updating quantity:', error);
+    }
+  };
+
+  document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById('checkout-button').addEventListener('click', function () {
+      window.location.href = '/checkout';
+    });
+
+    updateTotalAmount();
+  });
+</script>
+</body>
+</html>

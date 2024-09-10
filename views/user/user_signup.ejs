@@ -1,15 +1,31 @@
-
 <%-include('includes/log_header')-%>
 
 <style>
     .zmdi-eye-off {
-    /* Add your desired styles for the eye-off state */
-    color: #333; /* Example: changing the color */
-}
+        color: #333;
+    }
 
+    /* Style the form groups to position the eye icon to the right */
+    .form-group {
+        position: relative;
+    }
+
+    .form-group input[type="password"] {
+        width: 100%;
+        padding-right: 40px; /* Add padding to prevent the text overlapping with the icon */
+    }
+
+    .zmdi-eye {
+        position: absolute;
+        right: 10px; /* Position the icon 10px from the right */
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #333;
+    }
 </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
 
 <section class="signup">
     <div class="container">
@@ -19,12 +35,12 @@
                 <form method="POST" class="register-form" id="register-form" action="/usersignup" onsubmit="return validateForm()">
                     <div class="form-group">
                         <label for="name"><i class="zmdi zmdi-account material-icons-name"></i></label>
-                        <input type="text" name="name" id="name" placeholder="Your Name"  />
+                        <input type="text" name="name" id="name" placeholder="Your Name" />
                         <div class="error-message" id="name-error"></div>
                     </div>
                     <div class="form-group">
                         <label for="email"><i class="zmdi zmdi-email"></i></label>
-                        <input type="email" name="email" id="email" placeholder="Your Email"  />
+                        <input type="email" name="email" id="email" placeholder="Your Email" />
                         <div class="error-message" id="email-error"><%= message %></div>
                     </div>
                     <div class="form-group">
@@ -35,15 +51,19 @@
                     </div>
                     <div class="form-group">
                         <label for="confirm_pass"><i class="zmdi zmdi-lock-outline"></i></label>
-                        <input type="password" name="confirm_password" id="confirm_pass" placeholder="Confirm Password"/>
+                        <input type="password" name="confirm_password" id="confirm_pass" placeholder="Confirm Password" />
                         <i class="zmdi zmdi-eye" id="togglePassword2" style="cursor: pointer;"></i>
                         <div class="error-message" id="confirm-password-error"></div>
                     </div>
-                    
-                    
-                  
+
+                    <!-- Referral Code Input -->
+                    <div class="form-group">
+                        <label for="referral_code"><i class="zmdi zmdi-card-giftcard"></i></label>
+                        <input type="text" name="referral_code" id="referral_code" placeholder="Referral Code (Optional)" />
+                    </div>
+
                     <div class="form-group form-button">
-                        <input type="submit" name="signup" id="signup" class="form-submit" value="Register"/>
+                        <input type="submit" name="signup" id="signup" class="form-submit" value="Register" />
                     </div>
                 </form>
             </div>
@@ -54,6 +74,7 @@
         </div>
     </div>
 </section>
+
 <script>
     function validateForm() {
         let valid = true;
@@ -62,11 +83,16 @@
         document.getElementById('name-error').textContent = '';
         document.getElementById('email-error').textContent = '';
         document.getElementById('password-error').textContent = '';
-         document.getElementById('confirm-password-error').innerText = ''
+        document.getElementById('confirm-password-error').textContent = '';
+
         // Validate name
         const name = document.getElementById('name').value;
+        const namePattern = /^[A-Za-z\s]+$/; // Allows only alphabets and spaces
         if (name.trim() === '') {
             document.getElementById('name-error').textContent = 'Name is required.';
+            valid = false;
+        } else if (!namePattern.test(name)) {
+            document.getElementById('name-error').textContent = 'Name should contain only alphabets.';
             valid = false;
         }
 
@@ -84,34 +110,35 @@
             document.getElementById('password-error').textContent = 'Password must be at least 6 characters long.';
             valid = false;
         }
-          
+
         const confirmPassword = document.getElementById('confirm_pass').value;
         if (password !== confirmPassword) {
-            document.getElementById('confirm-password-error').innerText = 'Passwords do not match.';
+            document.getElementById('confirm-password-error').textContent = 'Passwords do not match.';
             valid = false;
         }
+
         return valid;
     }
+
     document.addEventListener('DOMContentLoaded', function () {
-    const togglePassword1 = document.querySelector('#togglePassword1');
-    const password1 = document.querySelector('#pass');
-    
-    togglePassword1.addEventListener('click', function (e) {
-        const type = password1.getAttribute('type') === 'password' ? 'text' : 'password';
-        password1.setAttribute('type', type);
-        this.classList.toggle('zmdi-eye-off');
-    });
+        const togglePassword1 = document.querySelector('#togglePassword1');
+        const password1 = document.querySelector('#pass');
 
-    const togglePassword2 = document.querySelector('#togglePassword2');
-    const password2 = document.querySelector('#confirm_pass');
-    
-    togglePassword2.addEventListener('click', function (e) {
-        const type = password2.getAttribute('type') === 'password' ? 'text' : 'password';
-        password2.setAttribute('type', type);
-        this.classList.toggle('zmdi-eye-off');
-    });
-});
+        togglePassword1.addEventListener('click', function () {
+            const type = password1.getAttribute('type') === 'password' ? 'text' : 'password';
+            password1.setAttribute('type', type);
+            this.classList.toggle('zmdi-eye-off');
+        });
 
+        const togglePassword2 = document.querySelector('#togglePassword2');
+        const password2 = document.querySelector('#confirm_pass');
+
+        togglePassword2.addEventListener('click', function () {
+            const type = password2.getAttribute('type') === 'password' ? 'text' : 'password';
+            password2.setAttribute('type', type);
+            this.classList.toggle('zmdi-eye-off');
+        });
+    });
 </script>
 
 <style>
@@ -120,5 +147,6 @@
         font-size: 0.9em;
     }
 </style>
+
 </body>
 </html>

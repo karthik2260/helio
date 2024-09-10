@@ -10,16 +10,208 @@
   <link rel="stylesheet" href="/assests/css/index.css" />
   <title>HELIO</title>
 </head>
+<style>
+
+.custom-search-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ffffff;
+    border-radius: 25px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 1px 2px;
+    max-width: 300px;
+    width: 100%;
+  }
+
+  #custom-search {
+    border: none;
+    outline: none;
+    padding: 10px;
+    width: 100%;
+    font-size: 16px;
+    border-radius: 25px;
+  }
+
+  #custom-search::placeholder {
+    color: #1d1717;
+  }
+
+  #custom-search-button {
+    background-color: #007BFF;
+    border: none;
+    outline: none;
+    padding: 10px 10px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    margin-left: 10px;
+  }
+
+  #custom-search-button svg {
+    fill: #ffffff;
+  }
+
+  #custom-search-button:hover {
+    background-color:#0056b3;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+
+  .page-btn {
+    margin: 0 5px;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    cursor: pointer;
+  }
+
+  .page-btn:hover {
+    background-color: #f0f0f0;
+  }
+
+  .product-center {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    /* Or use space-around */
+  }
+
+  .product-item {
+    flex: 1 1 calc(25% - 20px);
+    /* 4 items per row with some margin */
+    margin: 10px;
+    border: 1px solid #ccc;
+    /* Stroke */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Shadow */
+    transition: box-shadow 0.3s ease;
+    /* Smooth transition for shadow */
+  }
+
+  .product-item:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    /* Shadow on hover */
+  }
+
+  .product-item .overlay {
+    position: relative;
+  }
+
+  .product-item .product-thumb img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .product-item .product-info {
+    padding: 15px;
+  }
+
+  .product-item .product-info span a {
+    color: #333;
+    text-decoration: none;
+    font-size: 16px;
+  }
+
+  .product-item .product-info h4,
+  .product-item .product-info h5 {
+    margin: 10px 0;
+  }
+
+  .product-item .icons {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    justify-content: space-around;
+    margin: 10px 0 0;
+  }
+
+  .product-item .icons li {
+    display: inline-block;
+    cursor: pointer;
+  }
+
+  .product-item .icons li i {
+    font-size: 20px;
+    color: #333;
+  }
+
+  .product-center {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    /* Four columns per row */
+    gap: 20px;
+    /* Space between items */
+  }
+
+  .product-item {
+    display: flex;
+    flex-direction: column;
+    /* Arrange children vertically */
+    justify-content: space-between;
+    /* Distribute space evenly */
+    height: 100%;
+    /* Ensure all items have the same height */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Adding shadow */
+    border: 1px solid #ddd;
+    /* Adding border */
+    padding: 10px;
+    /* Adding padding */
+    background-color: #fff;
+    /* Background color */
+  }
+
+  .overlay img {
+    width: 100%;
+    /* Ensure images fit their container */
+    height: auto;
+  }
+
+  .product-info {
+    text-align: center;
+    /* Center text inside product info */
+    flex-grow: 1;
+    /* Allow product info to grow and take up available space */
+  }
+
+  .icons {
+    display: flex;
+    justify-content: space-around;
+    /* Distribute icons evenly */
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
+    /* Add some space above the icons */
+  }
+
+  .icons li {
+    display: inline;
+  }
+
+  .product_details-original-price {
+    text-decoration: line-through;
+    color: gray;
+  }
+
+  .product_details-discount {
+    color: green;
+  }
+
+
+</style>
 
 <body>
   <!-- Navigation -->
-  <div class="top-nav">
-    <div class="container d-flex">
-
-
-    </div>
-  </div>
-  <div class="navigation">
+   <div class="navigation">
     <div class="nav-center container d-flex">
       <a href="/" class="logo">
         <h1>HELIO</h1>
@@ -29,50 +221,35 @@
         <li class="nav-item">
           <a href="/" class="nav-link">Home</a>
         </li>
-        <li class="nav-item">
-          <a href="product.html" class="nav-link">Shop</a>
-        </li>
-        <li class="nav-item">
-          <a href="#terms" class="nav-link">Terms</a>
-        </li>
+
+
         <li class="nav-item">
           <a href="#about" class="nav-link">About</a>
         </li>
         <li class="nav-item">
           <a href="#contact" class="nav-link">Contact</a>
         </li>
-        <li class="icons d-flex">
-          <a href="/profile" class="icon">
-            <i class="bx bx-user"></i>
-          </a>
-          <div class="icon">
-            <i class="bx bx-search"></i>
-          </div>
-          <div class="icon">
-            <i class="bx bx-heart"></i>
-            <span class="d-flex">0</span>
-          </div>
-          <a href="/cart" class="icon">
-            <i class="bx bx-cart"></i>
-            <span class="d-flex">0</span>
-          </a>
-        </li>
+
       </ul>
+     
 
       <div class="icons d-flex">
         <a href="/profile" class="icon">
           <i class="bx bx-user"></i>
         </a>
+
         <div class="icon">
-          <i class="bx bx-search"></i>
-        </div>
-        <div class="icon">
-          <i class="bx bx-heart"></i>
-          <!-- <span class="d-flex">0</span> -->
+          <a href="/wishlisted">
+            <i class="bx bx-heart"></i></a>
+          <span class="d-flex">
+            <%=wishCount %>
+          </span>
         </div>
         <a href="/cart" class="icon">
           <i class="bx bx-cart"></i>
-          <!-- <span class="d-flex">0</span> -->
+          <span class="d-flex">
+            <%=cartCount%>
+          </span>
         </a>
       </div>
 
@@ -82,60 +259,85 @@
     </div>
   </div>
 
+
   <!-- All Products -->
   <section class="section all-products" id="products">
     <div class="top container">
-     
+      <div class="custom-search-container">
+        <input type="text" id="custom-search" placeholder="Search...">
+        <button id="custom-search-button">
+          <i class="bx bx-search"></i>
+        </button>
+      </div>
       <select id="shop">
-        <option name="cata" value="" selected disabled>category</option>
-        <option name="cata" value="business">BUSINESS</option>
-        <option name="cata" value="gaming">GAMING</option>
-        <option name="cata" value="convertible">CONVERTIBLE</option>
-        </select>
-     
-      <h1>
-        
-      </h1>
+        <option name="cata" value="" selected disabled>Brand</option>
+        <option name="cata" value="Apple">Apple</option>
+        <option name="cata" value="Dell">Dell</option>
+        <option name="cata" value="Asus">Asus</option>
+        <option name="cata" value="MSI">MSI</option>
+        <option name="cata" value="Samsung">Samsung</option>
+      </select>
       <form>
-        <select>
-          <option value="1">Defualt Sorting</option>
-          <option value="2">Sort By Price</option>
-          <option value="3">Sort By Popularity</option>
-          <option value="4">Sort By Sale</option>
-          <option value="5">Sort By Rating</option>
+        <select id="sort">
+          <option value="1" disabled selected>Sort by</option>
+          <option value="2">Low to High</option>
+          <option value="3">High to low</option>
+          <option value="4">A to Z</option>
+          <option value="5">Z to A</option>
+          <option value="6">Newest</option>
         </select>
         <span><i class="bx bx-chevron-down"></i></span>
       </form>
-      
     </div>
     
-    <div class="product-center container">
-      <% products.forEach(product=> { %>
-        <div class="product-item">
-          <div class="overlay">
-            <a href="productdetail?id=<%= product._id %>" class="product-thumb">
-              <img src="<%= product.images[0] %>" alt="" />
-            </a>
-          </div>
-          <div class="product-info">
-            <a href="/productdetail?id=<%= product._id %>"> <span>
-                <%= product.product_name %>
-              </span>
-              <h4>
-                <%= product.brand %>
-              </h4>
-              <h5>&#8377 <%= product.price %>
-              </h5>
-          </div>
-         <ul class="icons">
-              <li><i class="bx bx-heart"></i></li>
-              <li><a href="/productdetail?id=<%=product._id  %>"><i class="bx bx-search"></i></a></li>
-              <li><a href="cart/<%=product._id %>"><i class="bx bx-cart"></i></a></li>
-            </ul>      
+    <div class="product-center">
+      <% products.forEach(product => { %>
+      <div class="product-item">
+        <div class="overlay">
+          <a href="/productdetail/<%= product._id %>" class="product-thumb">
+            <img src="<%= product.images[0] %>" alt="" />
+          </a>
         </div>
-        <% }) %>
+        <div class="product-info">
+          <span><a href="/productdetail/<%= product._id %>"><%= product.product_name %></a></span>
+          <% if (product.offerPrice && product.offerPrice < product.price) { %>
+            <h4 class="product_details-offer-price">&#8377;<%= product.offerPrice %></h4>
+            <span class="product_details-original-price">M.R.P.: &#8377;<%= product.price %></span>
+            <span class="product_details-discount">(<%= Math.round(((product.price - product.offerPrice) / product.price) * 100) %> % off)</span>
+          <% } else { %>
+            <h4 class="product_details-offer-price">&#8377;<%= product.price %></h4>
+          <% } %>
+          <h4><%= product.brand %></h4>
+        </div>
+        <ul class="icons">
+          <li><a href="/wishlist/<%= product._id %>"><i class="bx bx-heart"></i></a></li>
+          <li><a href="/productdetail/<%= product._id %>"><i class="bx bx-search"></i></a></li>
+          <li><a href="/cart/<%= product._id %>"><i class="bx bx-cart"></i></a></li>
+        </ul>
+      </div>
+      <% }) %>
     </div>
+    
+
+     <!-- pagination -->
+     <div class="pagination-container">
+      <div class="pagination" id="innerpage">
+          <% if (typeof currentPage !== 'undefined' && currentPage > 1) { %>
+              <a href="?page=<%= currentPage - 1 %>" class="page-btn">Previous</a>
+          <% } %>
+          <% if (typeof pages !== 'undefined') { %>
+              <% for (let i = 1; i <= pages; i++) { %>
+                  <a href="?page=<%= i %>" class="page-btn <%= (typeof currentPage !== 'undefined' && currentPage === i) ? 'active' : '' %>"><%= i %></a>
+              <% } %>
+          <% } %>
+          <% if (typeof currentPage !== 'undefined' && typeof pages !== 'undefined' && currentPage < pages) { %>
+              <a href="?page=<%= currentPage + 1 %>" class="page-btn">Next</a>
+          <% } %>
+      </div>
+  </div>
+
   </section>
+
   <!-- Footer -->
   <footer class="footer">
     <div class="row">
@@ -162,36 +364,166 @@
       </div>
     </div>
   </footer>
+
   <!-- Custom Script -->
-  <script src="./js/index.js"></script>
-  <script>
-       document.getElementById('shop').addEventListener('change', function() {
-            const selected = this.value;
-            fetch("/shop", {
-				method: "POST",
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({ tems: selected })
-			}).then(res => res.json())
-      .then(res =>{
-        console.log('hellllllllllllllllo');
-        if(res==='business'){
-          window.location.href = '/business'
-        
-    }
-    else if(res==='gaming'){
-      window.location.href = '/gaming'
-    }
-    else if(res==='convertible'){
-      window.location.href = '/convertible'
-    }
-      })
+  <script src="/assests/js/index.js"></script>
+<!-- Include jQuery if not already included -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 
+<script>
+$(document).ready(function () {
+    // Sort products
+    $('#sort').change(function () {
+        const sort = $(this).val();
+        const brand = $('#shop').val();
+        const word = $('#custom-search').val().trim();  // Get search keyword, if any
 
+        $.ajax({
+            url: '/prod',
+            type: 'POST',
+            data: { brand, sort, word },  // Include the search keyword in the request
+            success: function (response) {
+                displayProducts(response.products);
+            },
+            error: function () {
+                window.location.href = '/error500';
+            }
         });
-  </script>
+    });
+
+    // Brand filter
+    $('#shop').change(function () {
+        const brand = $(this).val();
+        const sort = $('#sort').val();
+        const word = $('#custom-search').val().trim();  // Get search keyword, if any
+
+        $.ajax({
+            url: '/prod',
+            type: 'POST',
+            data: { brand, sort, word },  // Include the search keyword in the request
+            success: function (response) {
+                displayProducts(response.products);
+            },
+            error: function () {
+                window.location.href = '/error500';
+            }
+        });
+    });
+
+    // Search products
+    let debounceTimeout;
+$('#custom-search-button').click(function (e) {
+    e.preventDefault();
+    performSearch();  // Trigger search on button click
+});
+
+$('#custom-search').on('input', function () {
+    clearTimeout(debounceTimeout); // Clear previous timeout
+    debounceTimeout = setTimeout(performSearch, 300);  // Trigger search on typing with a delay
+});
+
+function performSearch() {
+    const word = $('#custom-search').val().trim();
+    const brand = $('#shop').val();  // Get the selected brand
+    const sort = $('#sort').val();   // Get the selected sort
+
+    if (!word) {
+        alert("Please enter a keyword to search.");
+        return;
+    }
+
+    $.ajax({
+        url: '/search',
+        type: 'POST',
+        data: { word, brand, sort },  // Include brand and sort with the search keyword
+        success: function (products) {
+            displayProducts(products);
+        },
+        error: function () {
+            window.location.href = '/error500';
+        }
+    });
+}
+
+// Function to display the products
+function displayProducts(products) {
+    const productContainer = $('.product-center');
+    productContainer.empty();
+
+    if (products.length === 0) {
+        productContainer.append('<p>No products found</p>');
+        return;
+    }
+
+    products.forEach(product => {
+        const productHtml = `
+            <div class="product-item">
+                <div class="overlay">
+                    <a href="/productdetail/${product._id}" class="product-thumb">
+                        <img src="${product.images[0]}" alt="" />
+                    </a>
+                </div>
+                <div class="product-info">
+                    <span><a href="/productdetail/${product._id}">${product.product_name}</a></span>
+                    ${product.offerPrice && product.offerPrice < product.price 
+                        ? `<h4 class="product_details-offer-price">&#8377;${product.offerPrice}</h4>
+                           <span class="product_details-original-price">M.R.P.: &#8377;${product.price}</span>
+                           <span class="product_details-discount">(${Math.round(((product.price - product.offerPrice) / product.price) * 100)}% off)</span>`
+                        : `<h4 class="product_details-offer-price">&#8377;${product.price}</h4>`
+                    }
+                    <h4>${product.brand}</h4>
+                </div>
+                <ul class="icons">
+                    <li><a href="/wishlist/${product._id}"><i class="bx bx-heart"></i></a></li>
+                    <li><a href="/productdetail/${product._id}"><i class="bx bx-search"></i></a></li>
+                    <li><a href="/cart/${product._id}"><i class="bx bx-cart"></i></a></li>
+                </ul>
+            </div>
+        `;
+        productContainer.append(productHtml);
+    });
+}
+
+});
+
+
+
+    // Optional: Function to update pagination UI
+    function updatePagination(pages, currentPage) {
+    const paginationContainer = $('.pagination-container');
+    paginationContainer.empty();
+
+    if (pages > 1) {
+        for (let i = 1; i <= pages; i++) {
+            paginationContainer.append(`
+                <a href="?page=${i}" class="page-btn ${currentPage === i ? 'active' : ''}">${i}</a>
+            `);
+        }
+    }
+}
+
+
+    // Function to load products by page
+    function loadProducts(page) {
+        $.ajax({
+            url: `/products?page=${page}`,
+            type: 'GET',
+            success: function (response) {
+                displayProducts(response.products);
+            },
+            error: function () {
+                window.location.href = '/error500';
+            }
+        });
+    }
+
+
+
+</script>
+
+
 </body>
 
 </html>

@@ -1,0 +1,234 @@
+<%- include('includes/header') -%>
+
+<!-- Navbar -->
+<%- include('includes/navbar') -%>
+
+<!-- Sidebar and Main Content -->
+<div class="container-fluid ms-md-4 mt-4">
+    <div class="row">
+        <%- include('includes/sidebar') -%>
+
+        <div class="col-md-9 account-content">
+            <div class="container rounded p-4" style="background-color: rgb(235, 249, 249);">
+                <h2 class="mb-4">ADD A NEW ADDRESS</h2>
+                <form action="/addaddress" method="post" onsubmit="return validateForm()">
+                  <input type="hidden" id="user_id" name="id" value="<%= user.id %>">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <label for="name" class="form-label">Name</label>
+                      <div class="form-floating mb-3">
+                        <input type="text" class="form-control" name="name" id="name" placeholder="Name" pattern="[A-Za-z\s]{1,50}" title="Name should contain only letters and spaces, and be between 1-50 characters long." required>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="number" class="form-label">10-digit mobile number</label>
+                      <div class="form-floating mb-3">
+                        <input type="text" class="form-control border-0 border-bottom rounded-0" name="number" id="mob" placeholder="Mobile Number" pattern="^\d{10}$" title="Mobile number should be exactly 10 digits." required>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="pincode" class="form-label">Pincode</label>
+                      <div class="form-floating mb-3">
+                        <input type="text" class="form-control border-0 border-bottom rounded-0" name="pincode" id="pin" placeholder="Pincode" pattern="^\d{6}$" title="Pincode should be exactly 6 digits." required>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="locality" class="form-label">Locality</label>
+                      <div class="form-floating mb-3">
+                        <input type="text" class="form-control border-0 border-bottom rounded-0" name="locality" id="locality" placeholder="Locality" pattern="[A-Za-z\s]{1,50}" title="Locality should contain only letters and spaces, and be between 1-50 characters long." required>
+                      </div>
+                    </div>
+                    <div class="col-12">
+                      <label for="address" class="form-label">Address (Area and Street):</label>
+                      <div class="form-floating mb-3">
+                        <textarea class="form-control" id="address" name="address" placeholder="Address" pattern="[A-Za-z0-9\s,.-]{5,100}" title="Address should be between 5-100 characters long and can include letters, numbers, commas, periods, and hyphens." required></textarea>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="district" class="form-label">City/District/Town</label>
+                      <div class="form-floating mb-3">
+                        <input type="text" class="form-control border-0 border-bottom rounded-0" name="district" id="district" placeholder="District" pattern="[A-Za-z\s]{1,50}" title="District should contain only letters and spaces, and be between 1-50 characters long." required>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="state" class="form-label">Select State</label>
+                      <div class="form-floating mb-3">
+                        <select class="form-select border-0 border-bottom rounded-0" name="state" id="state" required>
+                          <option value="" disabled selected>Select State</option>
+                          <option value="Kerala">Kerala</option>
+                          <option value="Tamilnadu">Tamilnadu</option>
+                          <option value="Karnataka">Karnataka</option>
+                          <!-- Add more options as needed -->
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="landmark" class="form-label">Landmark (Optional)</label>
+                      <div class="form-floating mb-3">
+                        <input type="text" class="form-control border-0 border-bottom rounded-0" name="landmark" id="landmark" placeholder="Landmark" pattern="[A-Za-z\s]{1,50}" title="Landmark should contain only letters and spaces, and be between 1-50 characters long.">
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="phone" class="form-label">Alternate Phone (Optional)</label>
+                      <div class="form-floating mb-3">
+                        <input type="text" class="form-control border-0 border-bottom rounded-0" name="phone" id="phone" placeholder="Alternate Phone" pattern="^\d{10}$" title="Alternate phone number should be exactly 10 digits.">
+                      </div>
+                    </div>
+                    <div class="col-12">
+                      <div class="form-group d-inline-flex">
+                        <label for="type" class="text-dark">Address Type :</label>
+                        <div class="radio ms-2">
+                          <input type="radio" id="radio2" name="addressType" value="home" required>
+                          <label for="type" class="text-dark">Home</label>
+                        </div>
+                        <div class="radio ms-2">
+                          <input type="radio" id="radio3" name="addressType" value="work" required>
+                          <label for="type" class="text-dark">Work</label>
+                        </div>
+                      </div>
+                    </div><br><br>
+                    <div class="col-md-3 col-sm-6">
+                      <button type="submit" class="btn btn-primary w-75 mt-2">SAVE</button>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                      <a href="/useraddress" class="btn btn-secondary ms-md-2 mt-2 w-75">CANCEL</a>
+                    </div>
+                  </div>
+                </form>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('includes/userFooter') -%>
+<script>
+ function validateForm() {
+  // Reset all error messages
+  document.querySelectorAll('.text-danger').forEach(el => el.textContent = '');
+
+  // Get form fields
+  const name = document.getElementById('name').value.trim();
+  const number = document.getElementById('mob').value.trim();
+  const pincode = document.getElementById('pin').value.trim();
+  const locality = document.getElementById('locality').value.trim();
+  const address = document.getElementById('address').value.trim();
+  const district = document.getElementById('district').value.trim();
+  const state = document.getElementById('state').value;
+  const addressType = document.querySelector('input[name="addressType"]:checked');
+
+  let isValid = true;
+
+  // Validate name
+  if (name === "") {
+    document.getElementById('nameError').textContent = "Name is required";
+    isValid = false;
+  } else if (name.length < 2) {
+    document.getElementById('nameError').textContent = "Name should be at least 2 characters long";
+    isValid = false;
+  }
+
+  // Validate mobile number
+  if (!/^\d{10}$/.test(number)) {
+    document.getElementById('mobError').textContent = "Please enter a valid 10-digit mobile number";
+    isValid = false;
+  }
+
+  // Validate pincode
+  if (!/^\d{6}$/.test(pincode)) {
+    document.getElementById('pinError').textContent = "Please enter a valid 6-digit pincode";
+    isValid = false;
+  }
+
+  // Validate locality
+  if (locality === "") {
+    document.getElementById('localityError').textContent = "Locality is required";
+    isValid = false;
+  }
+
+  // Validate address
+  if (address === "") {
+    document.getElementById('addressError').textContent = "Address is required";
+    isValid = false;
+  } else if (address.length < 10) {
+    document.getElementById('addressError').textContent = "Please provide a more detailed address";
+    isValid = false;
+  }
+
+  // Validate district
+  if (district === "") {
+    document.getElementById('districtError').textContent = "City/District/Town is required";
+    isValid = false;
+  }
+
+  // Validate state
+  if (state === "") {
+    document.getElementById('stateError').textContent = "Please select a state";
+    isValid = false;
+  }
+
+  // Validate address type
+  if (!addressType) {
+    document.getElementById('addressTypeError').textContent = "Please select an address type";
+    isValid = false;
+  }
+
+  // Optional fields validation
+  const landmark = document.getElementById('landmark').value.trim();
+  const altPhone = document.getElementById('phone').value.trim();
+
+  if (landmark && landmark.length < 3) {
+    document.getElementById('landmarkError').textContent = "Landmark should be at least 3 characters long";
+    isValid = false;
+  }
+
+  if (altPhone && !/^\d{10}$/.test(altPhone)) {
+    document.getElementById('phoneError').textContent = "Please enter a valid 10-digit alternate phone number";
+    isValid = false;
+  }
+
+  if (!isValid) {
+    // Scroll to the first error
+    const firstError = document.querySelector('.text-danger:not(:empty)');
+    if (firstError) {
+      firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+
+  return isValid;
+}
+
+// Real-time validation
+document.getElementById('addressForm').addEventListener('input', function(e) {
+  if (e.target.id) {
+    validateField(e.target.id);
+  }
+});
+
+function validateField(fieldId) {
+  const field = document.getElementById(fieldId);
+  const errorSpan = document.getElementById(fieldId + 'Error');
+
+  switch(fieldId) {
+    case 'name':
+      if (field.value.trim() === "") {
+        errorSpan.textContent = "Name is required";
+      } else if (field.value.trim().length < 2) {
+        errorSpan.textContent = "Name should be at least 2 characters long";
+      } else {
+        errorSpan.textContent = "";
+      }
+      break;
+    case 'mob':
+      if (!/^\d{10}$/.test(field.value.trim())) {
+        errorSpan.textContent = "Please enter a valid 10-digit mobile number";
+      } else {
+        errorSpan.textContent = "";
+      }
+      break;
+    // Add cases for other fields
+  }
+}
+  </script>
+
+<%- include('includes/footer') -%>

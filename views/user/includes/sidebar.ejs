@@ -1,0 +1,157 @@
+
+        <div class="col-md-3 col-sm-6 account-nav rounded shadow">
+            <div class="user-info">
+                <% console.log(user,'fdjkdsihdhjhjhjjjjjjjjjjk');
+                 %>
+                <div class="user-name"><%= user && user.name ? user.name : 'Guest' %></div>
+                <div class="wallet-amount">
+                    <i class="fa-solid fa-wallet me-1"></i>
+                    Wallet Amount: <%= walletHistory && walletHistory.balance ? walletHistory.balance : '0.00' %>
+                </div>
+                
+            </div>
+            <hr>
+            <ul class="list-unstyled" id="accountNavLinks">
+                <li>
+                    <a href="/profile" class="nav-item">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/useraddress" class="nav-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Addresses</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/userorders" class="nav-item">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span>My Orders</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/wishlisted" class="nav-item">
+                        <i class="fas fa-heart"></i>
+                        <span>My Wishlist</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/cart" class="nav-item">
+                        <i class="fas fa-heart"></i>
+                        <span>My Cart</span>
+                    </a>
+                </li>  
+                <li>
+                    <a href="/wallethistory" class="nav-item">
+                        <i class="fas fa-history"></i>
+                        <span>Wallet History</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/forgotemail" class="nav-item">
+                        <i class="fas fa-key"></i>
+                        <span>Change Password</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="logout-section">
+                <a href="/logout" class="nav-item text-danger">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+
+
+<style>
+    .account-nav {
+        background-color: #f8f9fa;
+        padding: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .user-info {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .user-name {
+        font-size: 1.2em;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .wallet-amount {
+        font-size: 0.9em;
+        color: #6c757d;
+    }
+
+    #accountNavLinks {
+        margin-top: 20px;
+    }
+
+    .nav-item {
+        display: flex;
+        align-items: center;
+        padding: 10px 15px;
+        color: #495057;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border-radius: 5px;
+        margin-bottom: 5px;
+    }
+
+    .nav-item i {
+        margin-right: 10px;
+        width: 20px;
+        text-align: center;
+    }
+
+    .nav-item:hover {
+        background-color: #e9ecef;
+        transform: translateX(5px);
+    }
+
+    .active-nav-item {
+        background-color: #007bff;
+        color: white !important;
+    }
+
+    .active-nav-item:hover {
+        background-color: #0056b3;
+    }
+
+    .logout-section {
+        margin-top: 30px;
+        border-top: 1px solid #dee2e6;
+        padding-top: 15px;
+    }
+
+    .logout-section .nav-item {
+        color: #dc3545;
+    }
+
+    .logout-section .nav-item:hover {
+        background-color: #dc3545;
+        color: white !important;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const navLinks = document.querySelectorAll('#accountNavLinks .nav-item');
+        const currentPath = window.location.pathname;
+
+        navLinks.forEach(link => {
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('active-nav-item');
+            }
+
+            link.addEventListener('click', function(e) {
+                navLinks.forEach(l => l.classList.remove('active-nav-item'));
+                this.classList.add('active-nav-item');
+            });
+        });
+    });
+</script>

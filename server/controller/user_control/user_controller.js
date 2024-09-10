@@ -4,7 +4,15 @@ const userdb = require('../../model/usermodel')
 const productdb = require('../../model/product')
 const dotenv = require('dotenv')
 dotenv.config({path:'.env'})
-const otpGenerator = require('otp-generator')
+const offerdb=require('../../model/offermodel')
+const wishlistdb=require('../../model/wishlistmodel')
+const cartdb = require('../../model/cartmodel')
+const Categorydb = require('../../model/category')
+
+
+
+googleapppassword = 'qwiq vbcl nrea ajne'
+googlemailname = 'karthik.dhanalekshmi@gmail.com'
 
 
 
@@ -15,10 +23,13 @@ const otpGenerator = require('otp-generator')
 const createTransporter = nodemailer.createTransport({
   service: 'Gmail',
   auth: {
-    user: process.env.googlemailname,
-    pass: process.env.googleapppassword,
+    user: 'karthik.dhanalekshmi@gmail.com',
+    pass: 'qwiq vbcl nrea ajne',
   },
 });
+
+
+
 
 
 
@@ -31,7 +42,7 @@ const get_login = async (req, res) => {
       console.log("Recieved request for sigin");
       if(req.cookies && req.cookies.userToken) {
         console.log('User token found , redirecting to home');
-        res.redirect('/home')
+        res.redirect('/')
       }else{
         console.log("No user token found , rendering login page");
         res.render('user/user_login',{message:""})
@@ -53,7 +64,7 @@ const get_login = async (req, res) => {
   const get_sigin = async (req, res) => {
     try {
       if (req.cookies && req.cookies.userToken) {
-        res.redirect('/home');
+        res.redirect('/');
       } else {
         res.render('user/user_signup', { message: '' });
       }
@@ -74,13 +85,13 @@ const post_login = async (req,res) => {
     const user = await userdb.findOne({email:email})
 
     if(!user) {
-      return res.render('/user/user_login' , {message : 'incorrect email'})
+      return res.render('user/user_login' , {message : 'incorrect email'})
     }
     if(user.password != password){
       return res.render('user/user_login',{message : 'incorrect password'})
     }
     if(user.status == 'blocked') {
-      return res.render('user/user_login',{message:'User iss blocked'})
+      return res.render('user/user_login',{message:'User is blocked'})
     }
     if(user){
 
@@ -89,7 +100,7 @@ const post_login = async (req,res) => {
       );
       req.session.email = req.body.email;
       res.cookie('userToken',userToken);
-      res.redirect('/home')
+      res.redirect('/')
     }else{
       res.render('user/user_login' , {message : "Email doesn't exists"})
     }
@@ -110,69 +121,79 @@ const post_login = async (req,res) => {
 
 
 
+const signup = async (req, res) => {
+  if (req.cookies.userToken) {
+    return res.redirect('/');
+  } else if (req.session.otp) {
+    delete req.session.otp;
+    return res.render('user/user_signup', { message: "" });
+  }
 
+  const { name, email, pass, referral_code } = req.body;
 
+  const existuser = await userdb.findOne({ email });
+  if (existuser) {
+    return res.render('user/user_signup', { message: 'Email already exists' });
+  }
 
-
-
-
-
-
-
-
-
-
-
-  const signup = async (req, res) => {
-
-    if (req.cookies.userToken) {
-      res.redirect('/home')
-    } else if (req.session.otp) {
-      delete req.session.otp;
-      res.render('user/user_signup', { message: "", })
-    }
-  
-    const existuser = await userdb.findOne({ email: req.body.email })
-    req.session.Nname = req.body.name;
-    req.session.Eemail = req.body.email;
-    req.session.Ppass = req.body.pass;
-    if (existuser) {
-      res.render('user/user_signup', { message: 'email already exist', })
-    } else {
-  
-      const recipientEmail = req.body.email
-  
-      const otp = generateOTP();
-      console.log(otp);
-  
-      req.session.otp = otp
-    
-  
-  
-      createTransporter.sendMail({
-        from: 'karthik.dhanalekshmi@gmail.com',
-        to: recipientEmail,
-        subject: 'your OTP verification',
-        text: `your OTP is ${otp}`
-      }, (err, info) => {
-        console.log("hi");                                                            
-        if (err) {
-          console.log('Error sending email', err);
-          res.render('user/user_signup', { message: 'Error sending OTP via email' })
-        } else {
-          console.log("keriyo");
-  
-  
-          console.log('OTP sent Succesfully', info.response);
-           res.render('user/otp', { email: req.body.email, message: "", error: '' });
-          //res.redirect('/otp')
-        }
-      })
-  
-  
-  
+  // Check referral code if provided
+  let referrer = null;
+  if (referral_code) {
+    const upperCaseReferralCode = referral_code.toUpperCase();
+    referrer = await userdb.findOne({ referralCode: upperCaseReferralCode });
+    if (!referrer) {
+      return res.render('user/user_signup', { message: 'Invalid referral code' });
     }
   }
+
+  // Generate new referral code for the signing up user
+  const newReferralCode = await generateReferralCode(8);
+
+  req.session.Nname = name;
+  req.session.Eemail = email;
+  req.session.Ppass = pass;
+  req.session.referralCode = newReferralCode;
+  req.session.referredBy = referrer ? referrer._id : null;
+
+  const otp = generateOTP();
+  console.log(otp);
+  req.session.otp = otp;
+
+  createTransporter.sendMail({
+    from: 'karthik.dhanalekshmi@gmail.com',
+    to: email,
+    subject: 'Your OTP verification',
+    text: `Your OTP is ${otp}`
+  }, (err, info) => {
+    if (err) {
+      console.log('Error sending email', err);
+      res.render('user/user_signup', { message: 'Error sending OTP via email' });
+    } else {
+      console.log("OTP sent successfully", info.response);
+      res.render('user/otp', { email: email, message: "", error: '' });
+    }
+  });
+};
+
+// Function to generate unique referral code
+const generateReferralCode = async (length) => {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  
+  // Ensure the generated code is unique
+  const existingUser = await userdb.findOne({ referralCode: result });
+  if (existingUser) {
+    return generateReferralCode(length); // Recursively try again
+  }
+  
+  return result;
+};
+
+
+
 
 
 
@@ -195,8 +216,8 @@ const post_login = async (req,res) => {
 
         console.log(otp);
         console.log('OTP sent Succesfully', info.response);
-        // res.render('user/otp', { email: req.body.email, message: "", error: '' });
-        res.redirect('/otp')
+         res.render('user/otp', { email: req.body.email, message: "", error: '' });
+        //res.redirect('/otp')
 
       }
     })
@@ -224,7 +245,6 @@ const post_login = async (req,res) => {
 
 
 
-
 const verify = async(req,res) => {
   if(req.session.otp == req.body.otp) {
     req.session.email = req.session.Eemail;
@@ -233,6 +253,9 @@ const verify = async(req,res) => {
       name : req.session.Nname,
       email : req.session.Eemail,
       password : req.session.Ppass,
+      referralCode : req.session.referralCode ,
+      referredBy: req.session.referredBy ,
+
     })
     delete req.session.otp;
     await user.save();
@@ -240,7 +263,7 @@ const verify = async(req,res) => {
       {email : req.session.Eemail} , 'your_key' , {expiresIn:'1h'}
     );
     res.cookie('userToken',userToken);
-    res.redirect('/home');
+    res.redirect('/');
 } else {
   res.status(400).render('user/otp',{message:'OTP is not matching',error:''})
 }
@@ -254,42 +277,88 @@ const verify = async(req,res) => {
 const logout = async (req,res) => {
   req.session.email = null;
   res.clearCookie('userToken');
-  res.redirect('/login')
+  res.redirect('/')
 
 }
 
 
 
+const block = async (req,res) => {
+  res.render('user/block')
+}
 
-const index = async (req,res) => {
+const index = async (req, res) => {
   try {
-    if(req.cookies.userToken){
-      const user = await userdb.findOne({email:req.session.email})
+    let wishlist = null;
+    let cart = null; // Initialize cart to null
+    let cartCount = 0;
+    let wishCount = 0;
 
-      const products = await productdb.find().populate("Category")
-      if(user && user.status === "block"){
-        res.redirect('/block')
-      }else{
-        res.render('user/index',{products,userToken:req.cookies.userToken})
+    if (req.cookies.userToken) {
+      const user = await userdb.findOne({ email: req.session.email });
+
+      if (user && user.status === "block") {
+        return res.redirect('/block');
       }
 
-
-    }else{
-      const products = await productdb.find().populate.find().populate('category')
-      res.render('user/index',{products,userToken:undefined})
+      if (user) {
+        wishlist = await wishlistdb.findOne({ user: user._id });
+        wishCount = wishlist ? wishlist.items.length : 0;
+        cart = await cartdb.findOne({ user: user._id }); // Assign cart here
+        cartCount = cart ? cart.items.length : 0;
+      }
     }
-  }catch(err){
+
+    const products = await productdb.find().populate('Category');
+    for (const product of products) {
+      await applyoffer(product);
+    }
+    const Categories = await Categorydb.find();
+
+    res.render('user/index', { products, userToken: req.cookies.userToken, wishlist, cart, wishCount, cartCount, Categories });
+
+  } catch (err) {
     console.log(err);
-    res.redirect('/err500')
+    res.redirect('/err500');
   }
-}
+};
+ 
 
 
+const applyoffer = async (product) => {
+  if (!product) {
+      return null;
+  }
 
+  try {
+      const productOffer = await offerdb.findOne({
+          product_name: product._id,
+          status: 'active'
+      });
+     
 
+      const categoryOffer = await offerdb.findOne({
+          category_name: product.Category._id, // Ensure this matches the field used in product's schema
+          status: 'active'
+      });
 
+      if (productOffer && typeof productOffer.discount_Percentage === 'number') {
+          product.offerPrice = Math.round(product.price - (product.price * (productOffer.discount_Percentage / 100)));
+          console.log("Applied product offer");
+      } else if (categoryOffer && typeof categoryOffer.discount_Percentage === 'number') {
+          product.offerPrice = Math.round(product.price - (product.price * (categoryOffer.discount_Percentage / 100)));
+          console.log("Applied category offer");
+      } else {
+          product.offerPrice = product.price;
+          console.log("No offers applied");
+      }
+  } catch (error) {
+      console.error('Error applying offer:', error);
+  }
 
-
+  return product;
+  
+};
 
 
 
@@ -308,17 +377,19 @@ const forgotemail = async(req,res) => {
     }
 
     const recipientEmail = req.body.email
+    console.log(recipientEmail,'akhil');
     req.session.forgotemail = req.body.email;
     const otp = generateOTP();
 
 
     req.session.forgot = otp
+    console.log(otp,'ysdjygj');
 
     createTransporter.sendMail({
       from : 'karthik.dhanaalekshmi@gmail.com',
       to : recipientEmail,
       subject : 'Your otp verification',
-      text : 'Your OTP is $[otp}'
+      text : 'Your OTP is ${otp}'
     }, (err,info) => {
       if(err) {
         console.log('Error sending email',err);
@@ -326,7 +397,7 @@ const forgotemail = async(req,res) => {
       }else{
         console.log(otp);
         console.log('OTP sent successfully' , info.response);
-        res.render('user/forgototp',{email:req.body.email,message:"",error:''})
+        res.render('user/forgot_otp',{email:req.body.email,message:"",error:''})
       }
     })
   }catch(err){
@@ -337,6 +408,74 @@ const forgotemail = async(req,res) => {
  
 
 
+const forgot_verify = async(req,res) => {
+  if(req.session.forgot == req.body.otp){
+    res.render('user/reset_password')
+  }else{
+    res.render('user/forgototp',{message : "OTP is not matching",error : ""})
+  }
+}
+
+const reset_password = async(req,res) => {
+  try {
+    const password = req.body.password
+    const user = await userdb.findOne({email:req.session.forgotemail})
+    user.password = password
+    await user.save();
+    res.redirect('/login')
+  }catch(err){
+    console.log(err);
+    res.redirect('/err500')
+  }
+}
+
+
+
+
+
+const forgot_resent=async(req,res)=>{
+  try{
+   
+  
+
+  
+
+  const recipientEmail = req.session.forgotemail 
+   
+      const otp = generateOTP();
+   
+
+    req.session.forgot = otp
+  
+
+
+    createTransporter.sendMail({
+      from: 'karthik.dhanalekshmi @gmail.com',
+      to: recipientEmail,
+      subject: 'your OTP verification',
+      text: `your OTP is ${otp}`
+    }, (err, info) => {
+                                                                 
+      if (err) {
+        console.log('Error sending email', err);
+        res.render('user/user_login', { message: 'Error sending OTP via email' })
+      } else {
+       
+
+        console.log(otp);
+        console.log('OTP sent Succesfully', info.response);
+        res.render('user/forgot_otp', { email: req.body.email, message: "", error: '' });
+
+      }
+    })
+
+  }catch(err){
+    console.log(err);
+    redirect('/err500')
+  }
+
+
+}
 
 
 
@@ -344,4 +483,85 @@ const forgotemail = async(req,res) => {
 
 
 
-  module.exports = {get_login,post_login,get_sigin,signup,index,resend,forgotemail,post_forgot,verify,logout}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// const productDetails = async(req,res) => {
+//   try {
+//     const product = await productdb.findById(req.params.id);
+//     if(!product){
+//       return res.status(404).render('error'),{message:'Product Not Found'}
+//     }
+//     res.render('productDetails',{product})
+//   }catch (error) {
+//     console.log(error);
+//     res.status(500).render('error',{message:'Server error'})
+//   }
+// }
+
+
+// app.get('/product/:id', async (req, res) => {
+//   try {
+//     const product = await Product.findById(req.params.id);
+//     if (!product) {
+//       return res.status(404).send('Product not found');
+//     }
+//     res.render('product', { product });
+//   } catch (err) {
+//     res.status(500).send(err.message);
+//   }
+// });
+
+
+
+const productDetails = async (req,res) => {
+  try {
+    let wishlist = null;
+    let cartCount = 0;
+    let wishCount = 0;
+    if (req.cookies.userToken) {
+      const user = await userdb.findOne({ email: req.session.email });
+
+      if (user && user.status === "block") {
+        return res.redirect('/block');
+      }
+    const product = await productdb.findById(req.params.id);
+    await applyoffer(product);
+    const products = await productdb.find().populate('Category');
+    for (const product of products) {
+      await applyoffer(product);
+     
+  }    if (user) {
+      wishlist = await wishlistdb.findOne({ user: user._id });
+      wishCount = wishlist ? wishlist.items.length : 0;
+        const cart = await cartdb.findOne({ user: user._id });
+        cartCount = cart ? cart.items.length : 0;
+    }
+    // console.log(product.images[0]);
+    res.render('user/productDetail',{products,product,wishlist, wishCount, cartCount})
+  }
+  }catch (error){
+    console.log(error);
+  }
+}
+
+
+
+
+
+
+
+
+
+  module.exports = {forgot_resent,block,get_login,productDetails,post_login,get_sigin,signup,index,applyoffer,resend,forgotemail,post_forgot,verify,forgot_verify,logout,reset_password}

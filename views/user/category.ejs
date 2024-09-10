@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Box icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css" />
+  <!-- Custom StyleSheet -->
+  <link rel="stylesheet" href="/assests/css/index.css" />
+  <title>HELIO</title>
+</head>
+<style>
+
+.custom-search-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ffffff;
+    border-radius: 25px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 1px 2px;
+    max-width: 300px;
+    width: 100%;
+  }
+
+  #custom-search {
+    border: none;
+    outline: none;
+    padding: 10px;
+    width: 100%;
+    font-size: 16px;
+    border-radius: 25px;
+  }
+
+  #custom-search::placeholder {
+    color: #1d1717;
+  }
+
+  #custom-search-button {
+    background-color: #007BFF;
+    border: none;
+    outline: none;
+    padding: 10px 10px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    margin-left: 10px;
+  }
+
+  #custom-search-button svg {
+    fill: #ffffff;
+  }
+
+  #custom-search-button:hover {
+    background-color:#0056b3;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+
+  .page-btn {
+    margin: 0 5px;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    cursor: pointer;
+  }
+
+  .page-btn:hover {
+    background-color: #f0f0f0;
+  }
+
+  .product-center {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    /* Or use space-around */
+  }
+
+  .product-item {
+    flex: 1 1 calc(25% - 20px);
+    /* 4 items per row with some margin */
+    margin: 10px;
+    border: 1px solid #ccc;
+    /* Stroke */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Shadow */
+    transition: box-shadow 0.3s ease;
+    /* Smooth transition for shadow */
+  }
+
+  .product-item:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    /* Shadow on hover */
+  }
+
+  .product-item .overlay {
+    position: relative;
+  }
+
+  .product-item .product-thumb img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .product-item .product-info {
+    padding: 15px;
+  }
+
+  .product-item .product-info span a {
+    color: #333;
+    text-decoration: none;
+    font-size: 16px;
+  }
+
+  .product-item .product-info h4,
+  .product-item .product-info h5 {
+    margin: 10px 0;
+  }
+
+  .product-item .icons {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    justify-content: space-around;
+    margin: 10px 0 0;
+  }
+
+  .product-item .icons li {
+    display: inline-block;
+    cursor: pointer;
+  }
+
+  .product-item .icons li i {
+    font-size: 20px;
+    color: #333;
+  }
+
+  .product-center {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    /* Four columns per row */
+    gap: 20px;
+    /* Space between items */
+  }
+
+  .product-item {
+    display: flex;
+    flex-direction: column;
+    /* Arrange children vertically */
+    justify-content: space-between;
+    /* Distribute space evenly */
+    height: 100%;
+    /* Ensure all items have the same height */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Adding shadow */
+    border: 1px solid #ddd;
+    /* Adding border */
+    padding: 10px;
+    /* Adding padding */
+    background-color: #fff;
+    /* Background color */
+  }
+
+  .overlay img {
+    width: 100%;
+    /* Ensure images fit their container */
+    height: auto;
+  }
+
+  .product-info {
+    text-align: center;
+    /* Center text inside product info */
+    flex-grow: 1;
+    /* Allow product info to grow and take up available space */
+  }
+
+  .icons {
+    display: flex;
+    justify-content: space-around;
+    /* Distribute icons evenly */
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
+    /* Add some space above the icons */
+  }
+
+  .icons li {
+    display: inline;
+  }
+
+  .product_details-original-price {
+    text-decoration: line-through;
+    color: gray;
+  }
+
+  .product_details-discount {
+    color: green;
+  }
+
+
+</style>
+
+<body>
+  <!-- Navigation -->
+   <div class="navigation">
+    <div class="nav-center container d-flex">
+      <a href="/" class="logo">
+        <h1>HELIO</h1>
+      </a>
+
+      <ul class="nav-list d-flex">
+        <li class="nav-item">
+          <a href="/" class="nav-link">Home</a>
+        </li>
+
+
+        <li class="nav-item">
+          <a href="#about" class="nav-link">About</a>
+        </li>
+        <li class="nav-item">
+          <a href="#contact" class="nav-link">Contact</a>
+        </li>
+
+      </ul>
+     
+
+      <div class="icons d-flex">
+        <a href="/profile" class="icon">
+          <i class="bx bx-user"></i>
+        </a>
+
+        <div class="icon">
+          <a href="/wishlisted">
+            <i class="bx bx-heart"></i></a>
+          <span class="d-flex">
+            <%=wishCount %>
+          </span>
+        </div>
+        <a href="/cart" class="icon">
+          <i class="bx bx-cart"></i>
+          <span class="d-flex">
+            <%=cartCount%>
+          </span>
+        </a>
+      </div>
+
+      <div class="hamburger">
+        <i class="bx bx-menu-alt-left"></i>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- All Products -->
+  <section class="section all-products" id="products">
+    
+    
+    <div class="product-center container" id="innerPeace">
+      <% products.forEach(product=> { %>
+        <div class="product-item">
+          <div class="overlay">
+            <% console.log(product);
+             %>
+            <a href="/productdetail/<%= product._id %>" class="product-thumb">
+              <img src="/<%= product.images[0] %>" alt="" />
+            </a>
+          </div>
+          <div class="product-info">
+            <span><a href="/productdetail/<%= product._id %>"><%= product.product_name %></a></span>
+          
+            <% if (product.offerPrice && parseFloat(product.offerPrice) < parseFloat(product.price)) { %>
+              <!-- If an offer price is available and lower than the original price -->
+              <h4 class="product_details-offer-price">&#8377;<%= product.offerPrice %></h4>
+              <span class="product_details-original-price" style="text-decoration: line-through;">M.R.P.: &#8377;<%= product.price %></span>
+              <span class="product_details-discount">(<%= Math.round(((product.price - product.offerPrice) / product.price) * 100) %> % off)</span>
+
+              
+            <% } else { %>
+              <!-- If no offer or discount, just show the regular price -->
+              <h4 class="product_details-offer-price">&#8377;<%= product.price %></h4>
+            <% } %>
+          
+            <h4><%= product.brand %></h4>
+          </div>
+          <ul class="icons">
+            <% if (wishlist && wishlist.items && wishlist.items.some(item => item.productId.toString() === product._id.toString())) { %>
+              <a href="/wishlisted">
+                <li style="background-color: brown;"><i class="bx bx-heart"></i></li>
+              </a>
+            <% } else { %>
+              <a href="/wishlist/<%= product._id %>">
+                <li><i class="bx bx-heart"></i></li>
+              </a>
+            <% } %>
+            <li><a href="/productdetail/<%= product._id %>"><i class="bx bx-search"></i></a></li>
+            <li><a href="/cart/<%= product._id %>"><i class="bx bx-cart"></i></a></li>
+          </ul>
+        </div>
+        <% }) %>
+      </div>
+
+     <!-- pagination -->
+     <div class="pagination-container">
+      <div class="pagination" id="innerpage">
+          <% if (typeof currentPage !== 'undefined' && currentPage > 1) { %>
+              <a href="?page=<%= currentPage - 1 %>" class="page-btn">Previous</a>
+          <% } %>
+          <% if (typeof pages !== 'undefined') { %>
+              <% for (let i = 1; i <= pages; i++) { %>
+                  <a href="?page=<%= i %>" class="page-btn <%= (typeof currentPage !== 'undefined' && currentPage === i) ? 'active' : '' %>"><%= i %></a>
+              <% } %>
+          <% } %>
+          <% if (typeof currentPage !== 'undefined' && typeof pages !== 'undefined' && currentPage < pages) { %>
+              <a href="?page=<%= currentPage + 1 %>" class="page-btn">Next</a>
+          <% } %>
+      </div>
+  </div>
+
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="row">
+      <div class="col d-flex">
+        <h4>INFORMATION</h4>
+        <a href="">About us</a>
+        <a href="">Contact Us</a>
+        <a href="">Term & Conditions</a>
+        <a href="">Shipping Guide</a>
+      </div>
+      <div class="col d-flex">
+        <h4>USEFUL LINK</h4>
+        <a href="">Online Store</a>
+        <a href="">Customer Services</a>
+        <a href="">Promotion</a>
+        <a href="">Top Brands</a>
+      </div>
+      <div class="col d-flex">
+        <span><i class="bx bxl-facebook-square"></i></span>
+        <span><i class="bx bxl-instagram-alt"></i></span>
+        <span><i class="bx bxl-github"></i></span>
+        <span><i class="bx bxl-twitter"></i></span>
+        <span><i class="bx bxl-pinterest"></i></span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Custom Script -->
+  <script src="/assests/js/index.js"></script>
+</body>
+
+</html>
