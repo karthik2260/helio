@@ -74,16 +74,28 @@
                                                     <div class="d-flex align-items-center">
                                                         <img src="<%= item.productId.images[0] %>" class="img-fluid rounded-3" style="max-width: 70px;" alt="Product Image">
                                                         <div class="flex-column ms-4">
-                                                            <%= item.productId.product_name %>
-                                                            <p class="mb-0" style="font-weight: 500;"><%= item.productId.size %></p>
-                                                            <p class="mb-0" style="font-weight: 500;">₹<%= total %></p>
-                                                            <% if (item.productId.offerPrice && item.productId.offerPrice < item.productId.price) { %>
-                                                                <label class="text-secondary text-decoration-line-through">₹<%= item.productId.price %></label>
-                                                                <label class="text-secondary ms-1"> (<%= Math.round(((item.productId.price - item.productId.offerPrice) / item.productId.price) * 100) %> % off)</label>
-                                                            <% } else { %>
-                                                                <label class="text-secondary">₹<%= item.productId.price %></label>
-                                                            <% } %>
-                                                        </div>
+    <!-- Product Name -->
+    <%= item.productId.product_name %>
+
+    <!-- Product Size -->
+    <p class="mb-0" style="font-weight: 500;"><%= item.productId.size %></p>
+
+    <!-- Price Display Logic -->
+    <% if (item.productId.offerPrice && item.productId.offerPrice < item.productId.price) { %>
+        <!-- Display Original Price with Strikethrough -->
+        <label class="text-secondary text-decoration-line-through">₹<%= item.productId.price %></label>
+        
+        <!-- Display Offer Price -->
+        <p class="mb-0" style="font-weight: 500;">₹<%= item.productId.offerPrice %></p>
+
+        <!-- Display Discount Percentage -->
+        <label class="text-secondary ms-1"> (<%= Math.round(((item.productId.price - item.productId.offerPrice) / item.productId.price) * 100) %> % off)</label>
+    <% } else { %>
+        <!-- Display Original Price if No Offer -->
+        <p class="mb-0" style="font-weight: 500;">₹<%= item.productId.price %></p>
+    <% } %>
+</div>
+
                                                     </div>
                                                 </a>
                                             </td>
