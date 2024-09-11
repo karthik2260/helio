@@ -14,7 +14,7 @@ require('dotenv').config(); // This should be at the top
 passport.use(new GoogleStrategy({
   clientID: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
-  callbackURL: 'http://www.helio.strangled.net/auth/google/callback'
+  callbackURL: 'http://helio.strangled.net/auth/google/callback'
 }, 
 async (accessToken, refreshToken, profile, cb) => {
   try {
