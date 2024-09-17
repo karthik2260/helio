@@ -522,32 +522,37 @@ const walletpay = async (req, res) => {
 };
 
 
-const apply_coupon = async(req,res) => {
-    
-        const {couponCode,totalAmount} = req.body
+const apply_coupon = async (req, res) => {
+    const { couponCode, totalAmount } = req.body;
 
-        const coupon = await coupondb.findOne({couponcode:couponCode})
-        if(!coupon || coupon.expireDate < new Date()){
-            return res.status(400).json({message:'Expired coupon'})
-        }
-        
-        if(coupon.minPurchaseAmount > totalAmount){
-            return res.status(400).json({message:`Purchase ${coupon.minPurchaseAmount}above`})
-        }
-
-        const discount = parseInt((totalAmount) * (coupon.discountPercentage))/100
-        const newTotalAmount = Math.round(parseInt(totalAmount) - discount)
-        res.json({newTotalAmount,discount})
+    const coupon = await coupondb.findOne({ couponcode: couponCode });
+    if (!coupon || coupon.expireDate < new Date()) {
+        return res.status(400).json({ message: 'Expired coupon' });
     }
 
+    if (coupon.minPurchaseAmount > totalAmount) {
+        return res.status(400).json({ message: `Purchase must be above ₹${coupon.minPurchaseAmount}` });
+    }
+
+    const discount = parseInt(totalAmount * coupon.discountPercentage) / 100;
+    const newTotalAmount = Math.round(totalAmount - discount);
+    res.json({ newTotalAmount, discount });
+};
+
+const removeCoupon = async (req, res) => {
+    const { couponCode } = req.body;
+
+    try {
+        // You can add logic to update/remove the coupon usage in the database here if needed
+        res.json({ success: true, message: 'Coupon removed successfully' });
+    } catch (error) {
+        console.error('Error removing coupon:', error);
+        res.status(500).json({ success: false, message: 'Failed to remove coupon' });
+    }
+};
 
 
 
 
 
-
-
-
-
-
-module.exports = {applyoffer,failpayment,apply_coupon,get_checkout,retrypayment,cod,check_stock,placed, onlinepayment,onlinepayed,paymentSucces,walletpay}
+module.exports = {applyoffer,failpayment,removeCoupon,apply_coupon,get_checkout,retrypayment,cod,check_stock,placed, onlinepayment,onlinepayed,paymentSucces,walletpay}

@@ -35,14 +35,25 @@
                                                 <%= item.productId.price %>
                                             <% } %>
                                         </p>
+                                        <p class="fw-bold mb-2">Coupon Discount: ₹
+
+                                        <% if (order.coupon) { %>
+                                            <p class="mb-2">Coupon Discount: ₹<%= order.coupon.discount %></p>
+                                        <% } %>
+                                    
                                         <p class="fw-bold mb-2">Total Price: ₹
-                                            <% if (item.productId.offerPrice && item.productId.offerPrice < item.productId.price) { %>
-                                                <%= item.productId.offerPrice * item.quantity %>
-                                            <% } else { %>
-                                                <%= item.productId.price * item.quantity %>
-                                            <% } %>
+                                            <% 
+                                                let itemPrice = (item.productId.offerPrice && item.productId.offerPrice < item.productId.price) 
+                                                    ? item.productId.offerPrice 
+                                                    : item.productId.price;
+                                                let totalPrice = itemPrice * item.quantity;
+                                                let discount = order.coupon ? order.coupon.discount : 0;
+                                                let finalPrice = totalPrice - discount;
+                                            %>
+                                            <%= finalPrice %>
                                         </p>
                                     </div>
+                                    
                                     <div class="card-text">
                                         <h6 class="mb-3">Shipping Address:</h6>
                                         <p>Name: <%= order.address.name %></p>

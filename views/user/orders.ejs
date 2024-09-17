@@ -69,15 +69,16 @@
                                         <span class="m-1 font-weight-bold">Total Amount: <%= order.totalAmount %></span>
                                     </div>
                                     <!-- Add form for Razorpay payment -->
-                                    <% if (order.paymentStatus === 'Pending') { %>
-                                    
-                                        
-                                        <button i class="btn btn-primary retry-payment-btn" data-order-id="<%= order._id %>">Pay with Razorpay</button>
-                                    
-                                    <% } %>
+                                  
                                     <!-- Add more order details here -->
                                 </a>
                                 </div>
+                                <% if (order.paymentStatus === 'Pending') { %>
+                                    
+                                        
+                                    <button i class="btn btn-primary retry-payment-btn" data-order-id="<%= order._id %>">Pay with Razorpay</button>
+                                
+                                <% } %>
                             </div>
                         </div>
                         <% }); %>

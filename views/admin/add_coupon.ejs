@@ -164,7 +164,6 @@
             <div id="error-message" class="text-danger"></div>
             <form action="/addCoupons" method="POST" onsubmit="return validateForm()">
                 <div class="mb-3">
-                  
                     <label for="couponcode" class="form-label">Coupon Name:</label><%=message%>
                     <input type="text" class="form-control" id="couponcode" name="couponcode" placeholder="Enter coupon Name">
                     <span id="nameError" class="error-text"></span>
@@ -172,27 +171,32 @@
     
                 <div class="mb-3">
                     <label for="discountPercentage" class="form-label">Discount Percentage:</label>
-                    <input type="number" class="form-control" id="discountPercentage" name="discountPercentage" >
+                    <input type="number" class="form-control" id="discountPercentage" name="discountPercentage">
                     <span id="discountError" class="error-text"></span>
                 </div>
     
                 <div class="mb-3">
+                    <label for="maxDiscountAmount" class="form-label">Maximum Discount Amount:</label>
+                    <input type="number" class="form-control" id="maxDiscountAmount" name="maxDiscountAmount">
+                    <span id="maxDiscountError" class="error-text"></span>
+                </div>
+    
+                <div class="mb-3">
                     <label for="expireDate" class="form-label">Expire Date:</label>
-                    <input type="date" class="form-control" id="expireDate" name="expireDate" >
+                    <input type="date" class="form-control" id="expireDate" name="expireDate">
                     <span id="expiryDateError" class="error-text"></span>
                 </div>
     
                 <div class="mb-3">
                     <label for="minPurchaseAmount" class="form-label">Minimum Purchase Amount:</label>
-                    <input type="number" class="form-control" id="minPurchaseAmount" name="minPurchaseAmount" >
+                    <input type="number" class="form-control" id="minPurchaseAmount" name="minPurchaseAmount">
                     <span id="minPurchaseError" class="error-text"></span>
                 </div>
     
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>
         </div>
-    </div>
-    </main>
+    </div>    </main>
     
     <script>
       document.addEventListener("DOMContentLoaded", function() {

@@ -13,6 +13,9 @@ var couponSchema=new mongoose.Schema({
     discountPercentage:{
         type:Number
 
+    },
+    maxDiscountAmount:{
+        type:Number
     }
 })
 

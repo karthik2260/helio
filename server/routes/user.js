@@ -78,7 +78,8 @@ route.get('/thankyou',check.active,checkout.placed)
 route.post('/razorpayment',check.active,checkout.onlinepayment)
 route.post('/onlinepayment',check.active,checkout.onlinepayed)
 route.post('/retrypayment',check.active,checkout.retrypayment)
-route.post('/applycoupon',check.active,checkout.apply_coupon)
+route.post('/applycoupon', check.active, checkout.apply_coupon);
+route.post('/removeCoupon', check.active, checkout.removeCoupon);
 route.post('/walletpay',check.active,checkout.walletpay)
 route.post('/failurePayment',check.active,checkout.failpayment)
 route.post('/retrysuccess',check.active,checkout.paymentSucces)

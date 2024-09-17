@@ -21,13 +21,15 @@ const add = async(req,res) => {
         if(coupons){
             return res.render('admin/add_coupon',{message:'Coupon already exists'})
         }else{
-            const {couponcode,discountPercentage,expireDate,minPurchaseAmount} = req.body
+            const {couponcode,discountPercentage,expireDate,minPurchaseAmount,maxDiscountAmount} = req.body
             const coupon = await coupondb.find();
             const coupe = new coupondb({
                 couponcode:couponcode,
                 discountPercentage:discountPercentage,
                 expireDate:expireDate,
-                minPurchaseAmount:minPurchaseAmount
+                minPurchaseAmount:minPurchaseAmount,
+                maxDiscountAmount
+
             })
 
             await coupe.save();
@@ -38,7 +40,7 @@ const add = async(req,res) => {
         
     }
 }
-
+    
 
    
 
