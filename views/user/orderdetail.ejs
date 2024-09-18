@@ -35,23 +35,40 @@
                                                 <%= item.productId.price %>
                                             <% } %>
                                         </p>
-                                        <p class="fw-bold mb-2">Coupon Discount: ₹
-
-                                        <% if (order.coupon) { %>
-                                            <p class="mb-2">Coupon Discount: ₹<%= order.coupon.discount %></p>
-                                        <% } %>
-                                    
-                                        <p class="fw-bold mb-2">Total Price: ₹
-                                            <% 
-                                                let itemPrice = (item.productId.offerPrice && item.productId.offerPrice < item.productId.price) 
-                                                    ? item.productId.offerPrice 
-                                                    : item.productId.price;
-                                                let totalPrice = itemPrice * item.quantity;
-                                                let discount = order.coupon ? order.coupon.discount : 0;
-                                                let finalPrice = totalPrice - discount;
-                                            %>
-                                            <%= finalPrice %>
-                                        </p>
+                                        <tr>
+                                            <td colspan="2">
+                                                <h5 class="font-size-14 m-0">Coupon Discount:</h5>
+                                            </td>
+                                            <td id="discount-coupon">
+                                                <% console.log(order.coupon,"jhkhkjhkh");
+                                                 %>
+                                                <% if (order.coupon) { %>
+                                                    ₹<%= order.coupon.discount %>
+                                                <% } else { %>
+                                                    ₹0
+                                                <% } %>
+                                            </td>
+                                        </tr>
+                                        <tr class="bg-light">
+                                            <td colspan="2">
+                                                <h5 class="font-size-14 m-0">Total:</h5>
+                                            </td>
+                                            <td id="totalAmountid">
+                                                <%
+                                                    let totalAmount = 0;
+                                                    order.items.forEach(item => {
+                                                        let itemPrice = (item.productId.offerPrice && item.productId.offerPrice < item.productId.price) 
+                                                            ? item.productId.offerPrice 
+                                                            : item.productId.price;
+                                                        totalAmount += itemPrice * item.quantity;
+                                                    });
+                                                    let discount = order.coupon ? order.coupon.discount : 0;
+                                                    let shippingFee = totalAmount > 1000 ? 0 : 50;
+                                                    let finalAmount = totalAmount - discount + shippingFee;
+                                                %>
+                                                ₹<%= finalAmount %>
+                                            </td>
+                                        </tr>
                                     </div>
                                     
                                     <div class="card-text">
