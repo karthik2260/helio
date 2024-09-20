@@ -179,95 +179,77 @@
                         
 
                         <form id="offerForm" action="/editoffer/<%=get._id%>" method="POST">
-
-                            <% if (typeof errorMessage !=='undefined' ) { %>
+                            <% if (typeof errorMessage !== 'undefined') { %>
                                 <div class="error-text" style="color: red; margin-bottom: 10px;">
                                     <%= errorMessage %>
                                 </div>
-                                <% } %>
-                                    <div class="form-group">
-                                        <div id="errorMessage" class="error-text"
-                                            style="color: rgb(201, 27, 27); margin-bottom: 10px;"></div>
-
-                                        <label for="offerName" class="form-label" >Offer Name</label>
-                                        <input type="text" id="offerName" name="offerName" class="form-control" value="<%=get.offerName%>">
-                                        <span class="error-text" id="offerNameError"></span>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="offerTy pe" class="form-label">Offer Type</label>
-                                        <select id="offerType" name="offerType" class="form-control">
-                                            <option value="">Select Offer Type</option>
-                                            <option value="category">Category</option>
-                                            <option value="product">Product</option>
-                                        </select>
-                                        <span class="error-text" id="offerTypeError"></span>
-                                    </div>
-                                    <div id="categoryFields" style="display: none;">
-                                        <div class="form-group">
-                                            <label for="category" class="form-label">Category</label>
-                                            <select id="category" name="categoryId" class="form-control">
-                                                <% if (POPcategories) { %>
-                                                    <% categories.forEach(category => { %>
-                                                        <% if (POPcategories.CategoryName != category.CategoryName) { %>
-                                                            <option value="<%= category._id %>">
-                                                                <%= category.CategoryName %>
-                                                            </option>
-                                                        <% } %>
-                                                    <% }) %>
-                                                <% } else { %>
-                                                    <% categories.forEach(category => { %>
-                                                        <option value="<%= category._id %>">
-                                                            <%= category.CategoryName %>
-                                                        </option>
-                                                    <% }) %>
-                                                <% } %>
-                                            </select>
-                                            
-                                            <span class="error-text" id="categoryError"></span>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="categoryDiscount" class="form-label">Category Discount
-                                                (%)</label>
-                                            <input type="number" id="categoryDiscount" name="categoryDiscount"
-                                                class="form-control" min="0" max="100">
-                                            <span class="error-text" id="categoryDiscountError"></span>
-                                        </div>
-                                    </div>
-                                    <div id="productFields" style="display: none;">
-                                        <div class="form-group">
-                                            <label for="product" class="form-label">Product</label>
-                                            <select id="product" name="productId" class="form-control">
-                                                <option value="">Select Product</option>
-                                                <% products.forEach(product=> { %>
-                                                    <option value="<%= product._id %>">
-                                                        <%= product.product_name %>
-                                                    </option>
-                                                    <% }) %>
-                                            </select>
-                                            <span class="error-text" id="productError"></span>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="productDiscount" class="form-label">Product Discount (%)</label>
-                                            <input type="number" id="productDiscount" name="productDiscount"
-                                                class="form-control" min="0" max="100">
-                                            <span class="error-text" id="productDiscountError"></span>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="StartingDate" class="form-label">Starting Date</label>
-                                        <input type="date" id="StartingDate" name="startingDate" class="form-control"
-                                            required>
-                                        <span class="error-text" id="StartingDateError"></span>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="expiryDate" class="form-label">Expiry Date</label>
-                                        <input type="date" id="expiryDate" name="expiryDate" class="form-control"
-                                            required>
-                                        <span class="error-text" id="expiryDateError"></span>
-                                    </div>
-                                    <div class="form-group">
-                                        <button type="submit" class="btn-primary">Add Offer</button>
-                                    </div>
+                            <% } %>
+                            <div class="form-group">
+                                <div id="errorMessage" class="error-text" style="color: rgb(201, 27, 27); margin-bottom: 10px;"></div>
+                        
+                                <label for="offerName" class="form-label">Offer Name</label>
+                                <input type="text" id="offerName" name="offerName" class="form-control" value="<%= get.offerName %>">
+                                <span class="error-text" id="offerNameError"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="offerType" class="form-label">Offer Type</label>
+                                <select id="offerType" name="offerType" class="form-control">
+                                    <option value="">Select Offer Type</option>
+                                    <option value="category" <%= get.offerType === 'category' ? 'selected' : '' %>>Category</option>
+                                    <option value="product" <%= get.offerType === 'product' ? 'selected' : '' %>>Product</option>
+                                </select>
+                                <span class="error-text" id="offerTypeError"></span>
+                            </div>
+                            <div id="categoryFields" style="display: <%= get.offerType === 'category' ? 'block' : 'none' %>;">
+                                <div class="form-group">
+                                    <label for="category" class="form-label">Category</label>
+                                    <select id="category" name="categoryId" class="form-control">
+                                        <% categories.forEach(category => { %>
+                                            <option value="<%= category._id %>" <%= get.categoryId && get.categoryId.toString() === category._id.toString() ? 'selected' : '' %>>
+                                                <%= category.CategoryName %>
+                                            </option>
+                                        <% }) %>
+                                    </select>
+                                    <span class="error-text" id="categoryError"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="categoryDiscount" class="form-label">Category Discount (%)</label>
+                                    <input type="number" id="categoryDiscount" name="categoryDiscount" class="form-control" min="0" max="100" value="<%= get.categoryDiscount || '' %>">
+                                    <span class="error-text" id="categoryDiscountError"></span>
+                                </div>
+                            </div>
+                            <div id="productFields" style="display: <%= get.offerType === 'product' ? 'block' : 'none' %>;">
+                                <div class="form-group">
+                                    <label for="product" class="form-label">Product</label>
+                                    <select id="product" name="productId" class="form-control">
+                                        <option value="">Select Product</option>
+                                        <% products.forEach(product => { %>
+                                            <option value="<%= product._id %>" <%= get.productId && get.productId.toString() === product._id.toString() ? 'selected' : '' %>>
+                                                <%= product.product_name %>
+                                            </option>
+                                        <% }) %>
+                                    </select>
+                                    <span class="error-text" id="productError"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="productDiscount" class="form-label">Product Discount (%)</label>
+                                    <input type="number" id="productDiscount" name="productDiscount" class="form-control" min="0" max="100" value="<%= get.productDiscount || '' %>">
+                                    <span class="error-text" id="productDiscountError"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="StartingDate" class="form-label">Starting Date</label>
+                                <input type="date" id="StartingDate" name="startingDate" class="form-control" required value="<%= get.startingDate ? get.startingDate.toISOString().split('T')[0] : '' %>">
+                                <span class="error-text" id="StartingDateError"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="expiryDate" class="form-label">Expiry Date</label>
+                                <input type="date" id="expiryDate" name="expiryDate" class="form-control" required value="<%= get.expiryDate ? get.expiryDate.toISOString().split('T')[0] : '' %>">
+                                <span class="error-text" id="expiryDateError"></span>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn-primary">Update Offer</button>
+                            </div>
                         </form>
                     </div>
                 </div>

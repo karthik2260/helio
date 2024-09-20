@@ -386,35 +386,62 @@ const wishlisted = async (req, res) => {
     try {
         const userEmail = await userdb.findOne({ email: req.session.email });
         if (!userEmail) {
-            return res.redirect('/login'); // or handle this case appropriately
+            return res.redirect('/login');
         }
         const userId = userEmail._id;
-        const wishlist = await wishlistdb.findOne({ user: userId }).populate('items.productId');
+        let wishlist = await wishlistdb.findOne({ user: userId }).populate('items.productId');
         
-        // Use userId instead of user (email) here
         let wallet = await walletdb.findOne({ user: userId });
         if (!wallet) {
             wallet = new walletdb({
-                user: userId, // Use userId here, not user._id
+                user: userId,
                 transactions: []
-            })
+            });
             await wallet.save();
         }
-        const products = await productdb.find().populate('Category');
+
+        // Fetch only listed products
+        const products = await productdb.find({ list: { $ne: 'unlisted' } }).populate('Category');
+        
         for (const product of products) {
-          await applyoffer(product);
-         
-      }
-        if (!wishlist) {
-            return res.render('user/wishlist', { wishlist: { items: [] }, user: userEmail, productInCart: "", walletHistory: wallet,products })
+            await applyoffer(product);
+        }
+
+        if (wishlist) {
+            // Filter out unlisted products from the wishlist
+            const originalLength = wishlist.items.length;
+            wishlist.items = wishlist.items.filter(item => item.productId && item.productId.list !== 'unlisted');
+            
+            // Save the updated wishlist if items were removed
+            if (wishlist.items.length !== originalLength) {
+                await wishlist.save();
+                console.log(`Removed ${originalLength - wishlist.items.length} unlisted products from wishlist`);
+            }
+        }
+
+        console.log(wishlist, 'updated wishlist');
+        
+        if (!wishlist || wishlist.items.length === 0) {
+            return res.render('user/wishlist', { 
+                wishlist: { items: [] }, 
+                user: userEmail, 
+                productInCart: "", 
+                walletHistory: wallet,
+                products 
+            });
         } else {
-            res.render('user/wishlist', { wishlist, user: userEmail, walletHistory: wallet, products })
+            res.render('user/wishlist', { 
+                wishlist, 
+                user: userEmail, 
+                walletHistory: wallet, 
+                products 
+            });
         }
     } catch (err) {
         console.log(err);
-        res.redirect('/error500')
+        res.redirect('/error500');
     }
-}
+};
 
 const add_wishlist = async (req,res) => {
     try {

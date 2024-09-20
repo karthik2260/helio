@@ -121,7 +121,7 @@ route.get('/forgot-resend',usercontrol.forgot_resent)
 
 
 
-// Product
+
 
 route.get('/productDetail/:id',check.active,usercontrol.productDetails)
 route.all('*',(req,res,next)=>{

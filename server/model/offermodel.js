@@ -13,6 +13,9 @@ const offerSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Categorydb'
     },
+    offerType : {
+        type : 'string'
+    },
     discount_Percentage: {
         type: Number
     },

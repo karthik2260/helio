@@ -9,8 +9,7 @@ const list = async (req,res) => {
     try {
         const categories = await Categorydb.find();
         
-        const product = await productdb.find().populate('Category')
-       
+        const product = await productdb.find({isDeleted:false}).populate('Category')
         res.render('admin/products',{categories,product})
     }catch (err) {
         console.log(err);
@@ -66,7 +65,6 @@ try{
         color: req.body.color,
         size: req.body.size,
         description: req.body.stat,
-        discount: discount,
         stock: req.body.stock,
         images: images,
         total_price: totalprice,
@@ -178,24 +176,9 @@ const deleteImage = async (req, res) => {
 
 const pro_delete = async (req, res) => {
     try {
-        const id = req.params.id;
-        productdb.deleteMany({ productdb: id })
-            .then(() => {
-                productdb.findByIdAndDelete(id)
-                    .then(data => {
-                        if (!data) {
-                            res.status(404).send({ message: `cannot delete with this id ${id}` })
-                        } else {
-                            res.send({ message: 'succesful' })
-                        }
-                    })
-                    .catch(err => {
-                        res.status(500).send({ message: 'could not delete this' })
-                    })
-            })
-            .catch(err => {
-                res.status(500).send({ message: 'could not delete this' })
-            })
+        const productId = req.params.id;
+        await productdb.findByIdAndUpdate(productId, { isDeleted: true,list:'unlisted' });
+    res.status(200).json({ message: 'Product marked as deleted' });
     } catch (error) {
         console.error(error)
         res.render('error500')

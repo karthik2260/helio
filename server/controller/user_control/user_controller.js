@@ -302,14 +302,14 @@ const index = async (req, res) => {
       }
 
       if (user) {
-        wishlist = await wishlistdb.findOne({ user: user._id });
+        wishlist = await wishlistdb.findOne({ user: user._id }).populate();
         wishCount = wishlist ? wishlist.items.length : 0;
         cart = await cartdb.findOne({ user: user._id }); // Assign cart here
         cartCount = cart ? cart.items.length : 0;
       }
     }
 
-    const products = await productdb.find().populate('Category');
+    const products = await productdb.find({list: 'listed'}).populate('Category');
     for (const product of products) {
       await applyoffer(product);
     }

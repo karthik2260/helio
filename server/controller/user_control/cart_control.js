@@ -48,7 +48,7 @@ const get_cart = async (req, res) => {
       const user = await userdb.findOne({ email: req.session.email });
       const userid = user._id;
       const wishlist = await wishlistdb.findOne({ user: userid });
-      const usercart = await cartdb.findOne({ user: userid }).populate('items.productId');
+      let usercart = await cartdb.findOne({ user: userid }).populate('items.productId');
       let totalAmount = 0;
       let wishCount = wishlist ? wishlist.items.length : 0;
       const wallet = await walletdb.findOne({ user: user }) || { balance: 0, transactions: [] };
@@ -64,10 +64,10 @@ const get_cart = async (req, res) => {
       let totalDiscount = 0;
       let totalPrice = 0;
   
-      if (!usercart) {
-        // Pass usercart as null to the view
-        return res.render('user/cart', { user: null, usercart: null, wishCount: 0, walletHistory: wallet });
-      } else {
+      if (usercart) {
+        // Filter out unlisted products
+        usercart.items = usercart.items.filter(item => item.productId && item.productId.list !== 'unlisted');
+  
         for (let item of usercart.items) {
           const productWithOffer = await applyoffer(item.productId);
           item.productId.offerPrice = productWithOffer.offerPrice;
@@ -78,24 +78,29 @@ const get_cart = async (req, res) => {
   
         usercart.items.forEach(item => {
           const { productId, quantity } = item;
-          totalDiscount += productId.discount;
+          totalDiscount += productId.offerPrice;
         });
   
         let balance = totalAmount - totalDiscount;
   
         usercart.totalDiscount = totalDiscount;
         usercart.balance = balance;
+        
+        // Save the updated cart (with unlisted products removed)
         await usercart.save();
       }
   
-      // Pass usercart to the view, even if it's null
+      // If cart is empty after removing unlisted products, set it to null
+      if (usercart && usercart.items.length === 0) {
+        usercart = null;
+      }
+  
       res.render('user/cart', { user, usercart, wishCount, walletHistory: wallet });
     } catch (err) {
       console.log(err);
       res.redirect('/error500');
     }
   };
-  
 
   
   

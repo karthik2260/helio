@@ -71,7 +71,7 @@ const categoryProducts = async (req, res) => {
             }
         }
         // Fetch products under the specific category
-        const products = await productdb.find({ Category: category._id }).populate('Category');
+        const products = await productdb.find({ Category: category._id,list:'listed' }).populate('Category');
         for (const product of products) {
             await applyoffer(product);
            

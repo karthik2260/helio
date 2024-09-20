@@ -133,15 +133,37 @@ const editOffer = async (req, res) => {
         const products = await productdb.find({}, 'product_name');
         const categories = await Categorydb.find({}, 'CategoryName');
         const id = req.params.id;
-        const get = await offerdb.findById(id);
-        const POPproducts = await productdb.findOne({ _id: get.product_name });
-        const POPcategories = await Categorydb.findOne({ _id: get.category_name });
-
-        if (!POPcategories) {
-            console.log("No category found with the given ID");
+        const offer = await offerdb.findById(id);
+        
+        if (!offer) {
+            return res.status(404).send("Offer not found");
         }
 
-        res.render('admin/edit_offer', { get, products, categories, errorMessage: '', POPproducts, POPcategories });
+        const POPproducts = offer.product_name ? await productdb.findById(offer.product_name) : null;
+        const POPcategories = offer.category_name ? await Categorydb.findById(offer.category_name) : null;
+
+        // Prepare the data to be sent to the view
+        const get = {
+            _id: offer._id,
+            offerName: offer.offerName,
+            offerType: offer.offerType,
+            categoryId: offer.category_name,
+            productId: offer.product_name,
+            discount: offer.discount_Percentage,
+            startingDate: offer.startingDate,
+            expiryDate: offer.expiryDate
+        };
+
+        console.log("Offer data being sent to view:", get);
+
+        res.render('admin/edit_offer', { 
+            get, 
+            products, 
+            categories, 
+            errorMessage: '', 
+            POPproducts, 
+            POPcategories 
+        });
     } catch (error) {
         console.error("Error in editOffer:", error);
         res.status(500).send("Internal Server Error");

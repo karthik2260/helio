@@ -29,9 +29,7 @@ let productsschema = new mongoose.Schema({
         type: String,
         default: 'listed'
     },
-    discount: {
-        type: Number
-    },
+    
     stock: {
         type: Number,
         required: true
@@ -45,7 +43,10 @@ let productsschema = new mongoose.Schema({
     count:{
         type:Number,
         default:0
-    }
+    },
+    isDeleted: { type: Boolean, default: false },
+
+
 });
 
 const productdb = mongoose.model('product', productsschema);
