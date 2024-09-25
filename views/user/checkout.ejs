@@ -103,9 +103,10 @@
                                                                             Address: <%= item.address %>, <%= item.locality %>, <%= item.district %>, <%= item.state %> - <%= item.pincode %>
                                                                         </span>
                                                                         <span class="text-muted fw-normal d-block">Mo. <%= item.mobileNumber %></span>
-                                                                        <a href='/update-address?id=<%= item._id %>' data-bs-toggle="tooltip" data-placement="top" title data-bs-original-title="Edit">
+                                                                        <a href='/updateAddress/<%= item._id %>' data-bs-toggle="tooltip" data-placement="top" title="Edit">
                                                                             <i class="bx bx-pencil font-size-16"></i>
                                                                         </a>
+                                                                        
                                                                     </div>
                                                                 </label>
                                                             </div>
@@ -246,14 +247,6 @@
         </td>
         <td>
             <%= products.totalAmount %>
-        </td>
-    </tr>
-    <tr>
-        <td colspan="2">
-            <h5 class="font-size-14 m-0">Discount :</h5>
-        </td>
-        <td>
-            <%= products.totalDiscount %>
         </td>
     </tr>
     <tr>

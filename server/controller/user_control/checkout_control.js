@@ -119,8 +119,8 @@ const cod=async(req,res)=>{
             
 
             updatedProducts.push({
-                productId: productId,
-                price: Math.min(product.offerPrice || Infinity, product.price - product.discount),
+                productId: item.productId,
+                price: item.offerPrice,
                 quantity: item.quantity,
             });
         }
@@ -482,8 +482,8 @@ const walletpay = async (req, res) => {
             await product.save();
 
             updatedProducts.push({
-                productId: productId,
-                price: Math.min(prod.offerPrice || Infinity, prod.price - prod.discount),
+                productId: item.productId,
+                price: item.offerPrice,
                 quantity: item.quantity,
             });
         }

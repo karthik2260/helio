@@ -107,20 +107,22 @@ const generateOrderInvoice = async (req, res) => {
     order.items.forEach(item => {
         const product = item.productId;
         const productNameLines = splitTextIntoLines(product.product_name, 10);
-    
+
         doc.text(product._id, itemCodeX, position);
-    
+
         productNameLines.forEach((line, index) => {
             doc.text(line, descriptionX, position + (index * 15)); // 15 is the line height
         });
-    
-      
-      
+        
+        const regularPrice = product.price;
+        const discountedPrice = product.offerPrice || product.price;
+        const totalAmount = discountedPrice * item.quantity;
+        
         doc.text(item.quantity, quantityX, position, { width: 50, align: 'right' })
-           .text(`Rs.${product.price}`, priceX, position, { width: 80, align: 'right' })
-           .text(product.offerPrice ? `Rs.${product.offerPrice}` : 'N/A', offerPriceX, position, { width: 80, align: 'right' })
-           .text(`Rs.${(product.offerPrice || product.price) * item.quantity}`, amountX, position, { width: 80, align: 'right' });
-    
+           .text(`Rs.${regularPrice.toFixed(2)}`, priceX, position, { width: 80, align: 'right' })
+           .text(`Rs.${discountedPrice.toFixed(2)}`, offerPriceX, position, { width: 80, align: 'right' })
+           .text(`Rs.${totalAmount.toFixed(2)}`, amountX, position, { width: 80, align: 'right' });
+
         position += (productNameLines.length * 15) > 20 ? (productNameLines.length * 15) : 20;
     });
     

@@ -9,7 +9,7 @@ const wishlistdb=require('../../model/wishlistmodel')
 const cartdb = require('../../model/cartmodel')
 const Categorydb = require('../../model/category')
 
-
+  
 
 googleapppassword = 'qwiq vbcl nrea ajne'
 googlemailname = 'karthik.dhanalekshmi@gmail.com'

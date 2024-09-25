@@ -260,20 +260,23 @@
     </main>
 
     <script>
-        document.getElementById('offerType').addEventListener('change', function () {
-            var categoryFields = document.getElementById('categoryFields');
-            var productFields = document.getElementById('productFields');
-            if (this.value === 'category') {
-                categoryFields.style.display = 'block';
-                productFields.style.display = 'none';
-            } else if (this.value === 'product') {
-                categoryFields.style.display = 'none';
-                productFields.style.display = 'block';
-            } else {
-                categoryFields.style.display = 'none';
-                productFields.style.display = 'none';
-            }
-        });
+        document.getElementById('offerType').addEventListener('change', function() {
+    const offerType = this.value;
+    const categoryFields = document.getElementById('categoryFields');
+    const productFields = document.getElementById('productFields');
+    
+    if (offerType === 'category') {
+        categoryFields.style.display = 'block';
+        productFields.style.display = 'none';
+    } else if (offerType === 'product') {
+        categoryFields.style.display = 'none';
+        productFields.style.display = 'block';
+    } else {
+        categoryFields.style.display = 'none';
+        productFields.style.display = 'none';
+    }
+});
+
 
         function validateForm() {
             var fields = [
@@ -342,6 +345,26 @@
 
             return isValid;
         }
+        document.getElementById('offerForm').addEventListener('submit', function(event) {
+    const offerName = document.getElementById('offerName').value;
+    const offerType = document.getElementById('offerType').value;
+    let valid = true;
+
+    if (!offerName.trim()) {
+        document.getElementById('offerNameError').innerText = 'Offer Name is required';
+        valid = false;
+    }
+
+    if (!offerType) {
+        document.getElementById('offerTypeError').innerText = 'Please select an offer type';
+        valid = false;
+    }
+
+    if (!valid) {
+        event.preventDefault(); // Prevent form submission if validation fails
+    }
+});
+
 
         document.getElementById('offerForm').addEventListener('submit', function (event) {
             if (!validateForm()) {

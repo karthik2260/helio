@@ -26,6 +26,9 @@ const orderSchema= new mongoose.Schema({
     deliveredDate:{
         type:Date
     },
+    offerPrice:{
+        type:Number
+    },
     expectedDeliveryDate:{
         type:Date
     },

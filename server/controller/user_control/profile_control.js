@@ -6,6 +6,7 @@ const { logout } = require('./user_controller');
 const walletdb=require('../../model/walletmodel')
 const wishlistdb=require('../../model/wishlistmodel')
 const cartdb=require('../../model/cartmodel')
+const offerdb=require('../../model/offermodel')
 
 
 
@@ -226,7 +227,6 @@ const delete_address = async(req,res) => {
     }
 }
 
-
 const applyoffer = async (product) => {
     if (!product) {
         return null;
@@ -238,9 +238,8 @@ const applyoffer = async (product) => {
             status: 'active'
         });
        
-  
         const categoryOffer = await offerdb.findOne({
-            category_name: product.Category._id, // Ensure this matches the field used in product's schema
+            category_name: product.Category._id,
             status: 'active'
         });
   
@@ -259,8 +258,7 @@ const applyoffer = async (product) => {
     }
   
     return product;
-    
-  };
+};
 
 const update_address = async (req, res) => {
     try {
@@ -381,7 +379,6 @@ const cancelOrder=async(req,res)=>{
 
 
 
-
 const wishlisted = async (req, res) => {
     try {
         const userEmail = await userdb.findOne({ email: req.session.email });
@@ -403,11 +400,14 @@ const wishlisted = async (req, res) => {
         // Fetch only listed products
         const products = await productdb.find({ list: { $ne: 'unlisted' } }).populate('Category');
         
-        for (const product of products) {
-            await applyoffer(product);
-        }
+        if (wishlist && wishlist.items.length > 0) {
+            for (const item of wishlist.items) {
+                if (item.productId) {
+                    // Apply the offer to each product in the wishlist
+                    await applyoffer(item.productId);
+                }
+            }
 
-        if (wishlist) {
             // Filter out unlisted products from the wishlist
             const originalLength = wishlist.items.length;
             wishlist.items = wishlist.items.filter(item => item.productId && item.productId.list !== 'unlisted');
@@ -419,26 +419,14 @@ const wishlisted = async (req, res) => {
             }
         }
 
-        console.log(wishlist, 'updated wishlist');
-        
-        if (!wishlist || wishlist.items.length === 0) {
-            return res.render('user/wishlist', { 
-                wishlist: { items: [] }, 
-                user: userEmail, 
-                productInCart: "", 
-                walletHistory: wallet,
-                products 
-            });
-        } else {
-            res.render('user/wishlist', { 
-                wishlist, 
-                user: userEmail, 
-                walletHistory: wallet, 
-                products 
-            });
-        }
+        res.render('user/wishlist', { 
+            wishlist: wishlist || { items: [] }, 
+            user: userEmail, 
+            walletHistory: wallet,
+            products 
+        });
     } catch (err) {
-        console.log(err);
+        console.error('Error in wishlisted function:', err);
         res.redirect('/error500');
     }
 };
@@ -637,6 +625,26 @@ const retur = async (req, res) => {
 };
 
 
+const walletpagination=async(req,res)=>{
+    
+ 
+ 
+    const page= parseInt(req.body.pageValue)
+    
+   
+    let jump = page*8;
+    const start = (page - 1) *8;
+
+    
+    
+    const user= await userdb.findOne({email:req.session.email})
+        let wallet= await walletdb.findOne({user:user});
+        wallet.transactions.reverse()
+        wallet.transactions = wallet.transactions.slice(start,jump);
+   
+        
+       return res.status(200).json( wallet);
+    }  
 
 
-module.exports = {retur,orderDetail,getwallet,remove_wishlist,add_wishlist,profile,wishlisted,cancelOrder,editProfile,edit_address,update_address,delete_address,add_address,get_address,address,userorders,post_edit_address,applyoffer}
+module.exports = {retur,walletpagination,orderDetail,getwallet,remove_wishlist,add_wishlist,profile,wishlisted,cancelOrder,editProfile,edit_address,update_address,delete_address,add_address,get_address,address,userorders,post_edit_address,applyoffer}

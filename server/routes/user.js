@@ -96,6 +96,7 @@ route.get('/category/:id', check.active, product.categoryProducts);
     route.post('/search',check.active,product.search)
     route.get('/viewmoreorder',check.active,product.pagination)
     route.get('/allviewmoreorder',product.allpage)
+    route.post('/walletpage',check.active,profile.walletpagination)
 
 
 

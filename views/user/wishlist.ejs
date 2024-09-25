@@ -83,18 +83,15 @@
                                     
                                                             <!-- Price Display Logic -->
                                                             <% if (item.productId.offerPrice && item.productId.offerPrice < item.productId.price) { %>
-                                                                <!-- Display Original Price with Strikethrough -->
-                                                                <label class="text-secondary text-decoration-line-through">₹<%= item.productId.price %></label>
-                                    
-                                                                <!-- Display Offer Price -->
-                                                                <p class="mb-0" style="font-weight: 500;">₹<%= item.productId.offerPrice %></p>
-                                    
-                                                                <!-- Display Discount Percentage -->
-                                                                <label class="text-secondary ms-1"> (<%= Math.round(((item.productId.price - item.productId.offerPrice) / item.productId.price) * 100) %> % off)</label>
-                                                            <% } else { %>
-                                                                <!-- Display Original Price if No Offer -->
-                                                                <p class="mb-0" style="font-weight: 500;">₹<%= item.productId.price %></p>
-                                                            <% } %>
+    <label class="text-secondary text-decoration-line-through">₹<%= item.productId.price %></label>
+    <p class="mb-0" style="font-weight: 500;">₹<%= item.productId.offerPrice %></p>
+    <label class="text-secondary ms-1">(<%= Math.round(((item.productId.price - item.productId.offerPrice) / item.productId.price) * 100) %> % off)</label>
+<% } else { %>
+    <p class="mb-0" style="font-weight: 500;">₹<%= item.productId.price %></p>
+<% } %>
+
+
+
                                                         </div>
                                                     </div>
                                                 </a>

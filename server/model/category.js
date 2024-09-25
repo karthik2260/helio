@@ -6,6 +6,8 @@ const categorySchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    list: { type: String, enum: ['listed', 'unlisted'], default: 'listed' }, // Change from 'delete' to 'unlist'
+
     discription: {
         type: String,
     },

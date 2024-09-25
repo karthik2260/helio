@@ -165,22 +165,23 @@
           <div class="text-danger" ></div>
           <form action="/addcategory" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
             <div class="mb-3">
-                <label form="categoryName" class="form-label">Category Name:</label>
-                <input type="text" class="form-control" id="categoryName" name="CategoryName" required>
+              <label for="categoryName" class="form-label">Category Name:</label>
+              <input type="text" class="form-control" id="categoryName" name="CategoryName" required>
+              <div id="categoryNameFeedback" class="invalid-feedback"></div>
             </div>
-        
+          
             <div class="mb-3">
-                <label for="description" class="form-label">Description:</label>
-                <textarea class="form-control" id="discription" name="discription"></textarea>
+              <label for="description" class="form-label">Description:</label>
+              <textarea class="form-control" id="discription" name="discription"></textarea>
             </div>
-        
+          
             <div class="mb-3">
-                <label for="image" class="form-label">Category Image:</label>
-                <input type="file" class="form-control" id="image" name="categoryImage" accept="image/*" required>
+              <label for="image" class="form-label">Category Image:</label>
+              <input type="file" class="form-control" id="image" name="categoryImage" accept="image/*" required>
             </div>
-        
+          
             <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
+          </form>
         
     </div>
       </div>
@@ -233,28 +234,63 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-  function validateForm() {
-        const inputs = document.querySelectorAll('input[type="text"], textarea');
+let categoryExists = false;
 
-        for (let i = 0; i < inputs.length; i++) {
-            
-            if (inputs[i].value.trim() === '') {
-         
-              Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Please fill out all fields.',
-                });
-                
-                inputs[i].focus();
-                 
-                return false;
-            }
+$('#categoryName').on('blur', function() {
+  const categoryName = $(this).val().trim();
+  if (categoryName) {
+    $.ajax({
+      url: '/check-category',
+      method: 'POST',
+      data: { categoryName: categoryName },
+      success: function(response) {
+        if (response.exists) {
+          $('#categoryNameFeedback').text('Category already exists').show();
+          categoryExists = true;
+        } else {
+          $('#categoryNameFeedback').hide();
+          categoryExists = false;
         }
+      }
+    });
+  }
+});
 
-        return true;
-    }
+function validateForm() {
+  const categoryName = document.getElementById('categoryName').value;
+  const words = categoryName.trim().split(/\s+/);
+  
+  if (categoryExists) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: 'Category already exists.',
+    });
+    return false;
+  }
+
+  if (words.length > 10) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: 'Category name should not exceed 10 words.',
+    });
+    return false;
+  }
+
+  if (!/^[A-Za-z\s]+$/.test(categoryName)) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: 'Category name should contain only alphabets.',
+    });
+    return false;
+  }
+
+  return true;
+}
 </script>
 
 </body>

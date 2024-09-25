@@ -61,7 +61,7 @@ const adding = async (req, res) => {
         if (productId) {
             productExists = await productdb.exists({ _id: productId });
         }
-        if (categoryId) {
+        if (categoryId) { 
             categoryExists = await Categorydb.exists({ _id: categoryId });
         }
         if (!productExists) {
@@ -117,7 +117,11 @@ const unlistOffer = async (req, res) => {
         const offers = await offerdb.findById(offerId);
         offers.status = offers.status === 'active' ? 'blocked' : 'active';
         await offers.save()
-
+        if (offers.offerType === 'product' && offers.status === 'blocked') {
+            let product = await productdb.findById(offers.product_name);
+             product.offerPrice = product.price 
+            await product.save(); // Save the updated product
+        }
 
         res.redirect('/offers');
     } catch (error) {

@@ -302,77 +302,68 @@
   const userData = <%- JSON.stringify(usercart) %>;
 
   const updateTotalAmount = () => {
-    let totalAmount = 0;
-    document.querySelectorAll('.cart-items table tr').forEach((row) => {
-      let priceElement = row.querySelector('td:nth-child(3)');
-      if (priceElement) {
-        let subtotal = parseFloat(priceElement.innerText.replace('₹', ''));
-        totalAmount += subtotal;
-      }
-    });
-    document.getElementById('total_amount').innerText = `₹${totalAmount}`;
-  };
-
-  const quantity = async (type, item) => {
-    let quantityElement = document.getElementById(`quantity-${item.productId._id}`);
-    let totalPriceElement = document.getElementById(`total_price_${item.productId._id}`);
-    let quantityValue = parseInt(quantityElement.value);
-
-    if (type === 'inc') {
-      if (quantityValue < item.productId.stock) {
-        quantityValue++;
-      } else {
-        Swal.fire({
-          title: 'Stock Exceeded!',
-          text: 'Cannot add more than available Stock',
-          icon: 'warning',
-          confirmButtonText: 'OK'
-        });
-        return;
-      }
-    } else {
-      if (quantityValue > 1) {
-        quantityValue--;
-      }
+  let totalAmount = 0;
+  document.querySelectorAll('.cart-items table tr').forEach((row) => {
+    let priceElement = row.querySelector('td:nth-child(3)');
+    if (priceElement) {
+      let subtotal = parseFloat(priceElement.innerText.replace('₹', ''));
+      totalAmount += subtotal;
     }
-
-    quantityElement.value = quantityValue;
-    let totalPrice = quantityValue * item.productId.offerPrice;
-    totalPriceElement.innerText = `₹${totalPrice}`;
-
-    try {
-      const res = await fetch(`/up-quantity/${item.productId._id}`, {
-        method: "PUT",
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ quantity: quantityValue })
-      }).then(response => response.json());
-
-      if (res.message === 'changed') {
-        const res = await fetch('/up-amount', {
-          method: "POST",
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }).then(response => response.json());
-
-        if (res.message === 'update') {
-          updateTotalAmount();
-        }
-      }
-    } catch (error) {
-      console.error('Error updating quantity:', error);
-    }
-  };
-
-  document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById('checkout-button').addEventListener('click', function () {
-      window.location.href = '/checkout';
-    });
-
-    updateTotalAmount();
   });
+  document.getElementById('total_amount').innerText = `₹${totalAmount.toFixed(2)}`;
+};
+
+const quantity = async (type, item) => {
+  let quantityElement = document.getElementById(`quantity-${item.productId._id}`);
+  let totalPriceElement = document.getElementById(`total_price_${item.productId._id}`);
+  let quantityValue = parseInt(quantityElement.value);
+
+  if (type === 'inc') {
+    if (quantityValue < item.productId.stock) {
+      quantityValue++;
+    } else {
+      Swal.fire({
+        title: 'Stock Exceeded!',
+        text: 'Cannot add more than available Stock',
+        icon: 'warning',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
+  } else {
+    if (quantityValue > 1) {
+      quantityValue--;
+    }
+  }
+
+  quantityElement.value = quantityValue;
+  let totalPrice = quantityValue * item.productId.offerPrice;
+  totalPriceElement.innerText = `₹${totalPrice.toFixed(2)}`;
+
+  try {
+    const res = await fetch(`/up-quantity/${item.productId._id}`, {
+      method: "PUT",
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ quantity: quantityValue })
+    }).then(response => response.json());
+
+    if (res.message === 'changed') {
+      updateTotalAmount(); // Update total amount immediately after changing quantity
+    }
+  } catch (error) {
+    console.error('Error updating quantity:', error);
+  }
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById('checkout-button').addEventListener('click', function () {
+    window.location.href = '/checkout';
+  });
+
+  updateTotalAmount();
+});
 </script>
 </body>
 </html>

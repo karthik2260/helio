@@ -14,7 +14,6 @@ const list = async(req,res) => {
         const category = await Categorydb.find();
         res.render('admin/category',{category})
     }catch (err){
-        console.log(error);
         res.render('admin/err500')
     }
 }
@@ -52,18 +51,32 @@ const add_category = async (req, res) => {
             return;
         }
 
-        let category = await Categorydb.findOne({ CategoryName: req.body.CategoryName });
+        const categoryName = req.body.CategoryName.trim();
+        const words = categoryName.split(/\s+/);
+
+        // Server-side validation
+        if (words.length > 10) {
+            res.render('admin/add_category', { message: 'Category name should not exceed 10 words.' });
+            return;
+        }
+
+        if (!/^[A-Za-z\s]+$/.test(categoryName)) {
+            res.render('admin/add_category', { message: 'Category name should contain only alphabets and spaces.' });
+            return;
+        }
+
+        let category = await Categorydb.findOne({ CategoryName: categoryName });
         if (category) {
             res.render('admin/add_category', { message: 'Category already exists' });
             return;
         } else {
             // Save the full path to the image
-            const imagePath = req.file.path; // This will give you the full path, e.g., 'uploads/categories/categoryImage-123456789.jpg'
+            const imagePath = req.file.path;
             
             const newcategory = new Categorydb({
-                CategoryName: req.body.CategoryName,
+                CategoryName: categoryName,
                 discription: req.body.discription,
-                image: imagePath // Save the full path in the database
+                image: imagePath
             });
             
             await newcategory.save();
@@ -74,9 +87,6 @@ const add_category = async (req, res) => {
         res.status(500).render('admin/err500');
     }
 };
-
-
-
 const get_edit = async(req,res) => {
     const id = req.params.id 
     const get = await Categorydb.findById(id)
