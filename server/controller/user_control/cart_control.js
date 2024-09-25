@@ -42,82 +42,89 @@ const applyoffer = async (product) => {
     
 };
 
+
 const get_cart = async (req, res) => {
     try {
-      // Check session
-      if (!req.session.email) {
-        console.log("Session email not found");
-        return res.redirect('/login');  // Redirect to login if no session
-      }
-  
-      // Find user by email in the session
-      const user = await userdb.findOne({ email: req.session.email });
-      if (!user) {
-        throw new Error("User not found with email: " + req.session.email);
-      }
-  
-      const userid = user._id;
-  
-      // Fetch wishlist and cart
-      const wishlist = await wishlistdb.findOne({ user: userid });
-      let usercart = await cartdb.findOne({ user: userid }).populate('items.productId');
-  
-      let totalAmount = 0;
-      let wishCount = wishlist ? wishlist.items.length : 0;
-  
-      // Fetch wallet or initialize if not found
-      let wallet = await walletdb.findOne({ user: user._id });
-      if (!wallet) {
-        wallet = new walletdb({
-          user: user._id,
-          transactions: []
-        });
-        await wallet.save();
-      }
-  
-      let totalDiscount = 0;
-      let totalPrice = 0;
-  
-      if (usercart) {
-        // Filter out unlisted products
-        usercart.items = usercart.items.filter(item => item.productId && item.productId.list !== 'unlisted');
-  
-        for (let item of usercart.items) {
-          const productWithOffer = await applyoffer(item.productId);
-          item.productId.offerPrice = productWithOffer.offerPrice;
-          item.productId.originalPrice = productWithOffer.originalPrice;
-          totalAmount += productWithOffer.offerPrice * item.quantity;
+        // Check if user is authenticated
+        if (!req.session || !req.session.email) {
+            return res.status(401).json({ error: 'User not authenticated' });
         }
+
+        const user = await userdb.findOne({ email: req.session.email });
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const userid = user._id;
+        const [wishlist, usercart, wallet] = await Promise.all([
+            wishlistdb.findOne({ user: userid }),
+            cartdb.findOne({ user: userid }).populate('items.productId'),
+            walletdb.findOne({ user: userid })
+        ]);
+
+        let totalAmount = 0;
+        let wishCount = wishlist ? wishlist.items.length : 0;
+        let walletBalance = wallet ? wallet.balance : 0;
+
+        if (!usercart || !usercart.items || usercart.items.length === 0) {
+            return res.render('user/cart', { 
+                user, 
+                usercart: null, 
+                wishCount, 
+                walletHistory: { balance: walletBalance, transactions: [] }
+            });
+        }
+
+        // Filter out unlisted products and apply offers
+        usercart.items = await Promise.all(usercart.items
+            .filter(item => item.productId && item.productId.list !== 'unlisted')
+            .map(async (item) => {
+                try {
+                    const productWithOffer = await applyoffer(item.productId);
+                    item.productId.offerPrice = productWithOffer.offerPrice;
+                    item.productId.originalPrice = productWithOffer.originalPrice;
+                    totalAmount += productWithOffer.offerPrice * item.quantity;
+                    return item;
+                } catch (error) {
+                    console.error(`Error applying offer to product ${item.productId._id}:`, error);
+                    return null;
+                }
+            }));
+
+        // Remove null items (products that failed offer application)
+        usercart.items = usercart.items.filter(item => item !== null);
+
+        if (usercart.items.length === 0) {
+            return res.render('user/cart', { 
+                user, 
+                usercart: null, 
+                wishCount, 
+                walletHistory: { balance: walletBalance, transactions: [] }
+            });
+        }
+
         usercart.totalAmount = totalAmount;
-  
-        usercart.items.forEach(item => {
-          const { productId, quantity } = item;
-          totalDiscount += productId.offerPrice;
-        });
-  
-        let balance = totalAmount - totalDiscount;
-  
+
+        let totalDiscount = usercart.items.reduce((sum, item) => 
+            sum + (item.productId.originalPrice - item.productId.offerPrice) * item.quantity, 0);
+
         usercart.totalDiscount = totalDiscount;
-        usercart.balance = balance;
-  
-        // Save the updated cart (with unlisted products removed)
+        usercart.balance = totalAmount;
+
         await usercart.save();
-      }
-  
-      // If cart is empty after removing unlisted products, set it to null
-      if (usercart && usercart.items.length === 0) {
-        usercart = null;
-      }
-  
-      // Render the cart page with all necessary data
-      res.render('user/cart', { user, usercart, wishCount, walletHistory: wallet });
+
+        res.render('user/cart', { 
+            user, 
+            usercart, 
+            wishCount, 
+            walletHistory: { balance: walletBalance, transactions: wallet ? wallet.transactions : [] }
+        });
     } catch (err) {
-      // Detailed logging to help with debugging in production
-      console.error("Error in get_cart function:", err.message, err.stack);
-      res.redirect('/error500');
+        console.error('Error in get_cart:', err);
+        res.status(500).json({ error: 'An error occurred while processing your request' });
     }
-  };
-  
+};
+
   
   
 const add_cart = async (req, res) => {
