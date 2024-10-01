@@ -271,6 +271,8 @@
         </td>
         <% console.log("balaceeeeee",products.totalAmount) %>
         <% if(products.totalAmount>'1000'){ %>
+            <% console.log(products.totalAmount);
+             %>
         <td id="totalAmountid"><%= products.totalAmount %></td>
         <% }else{ %> 
             <td id="totalAmountid"> <%= products.totalAmount+50 %></td>
@@ -452,7 +454,7 @@
 								headers: {
 									'content-Type': 'application/json'
 								},
-								body: JSON.stringify({ data, paymentMethod,totalamount})
+								body: JSON.stringify({ data, paymentMethod,totalamount,coupondiscount})
                             
 							})
                             
@@ -474,14 +476,16 @@
                              if(paymentMethod === 'online' && items.length != 0){
                                 
                                 var totalElement = document.getElementById('totalAmountid');
-                                const totalamount = totalElement.textContent.trim();
+                                var couponElement = document.getElementById('dicount-coupon');
+                                
+                                const totalamount = totalElement.textContent;
+                                const coupondiscount = couponElement.textContent
                                 
                             
-                                
                                 fetch('/razorpayment', {
-								method: 'post',
+								method: 'POST',
 								headers: {
-									'content-Type': 'application/json'
+									'Content-Type': 'application/json'
 								},
 								body: JSON.stringify({ totalamount,coupondiscount })
 							}).then(res => res.json())
@@ -494,7 +498,7 @@
                                             "description": "Test Transaction",
                                             "image": "",
                                             "order_id": res.order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
-                                            "callback_url": `/onlinepayment?paymentMethod=${paymentMethod}&data=${JSON.stringify(data)}&total=${totalamount}`,
+                                            "callback_url": `/onlinepayment?paymentMethod=${paymentMethod}&data=${JSON.stringify(data)}&total=${totalamount}&discount=${coupondiscount}`,
                                             "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information especially their phone number
                                                 // "name": "Gaurav Kumar", //your customer's name
                                                 // "email": "",
@@ -532,7 +536,11 @@
                             }
                             else if (paymentMethod === 'wallet' && items.length != 0) {
     var totalElement = document.getElementById('totalAmountid');
+    var couponElement = document.getElementById('dicount-coupon');
+
     const totalamount = totalElement.textContent.trim();
+    const coupondiscount = couponElement.textContent
+
     console.log('Processing wallet payment', totalamount);
 
     fetch('/walletpay', {
@@ -540,7 +548,7 @@
         headers: {
             'content-Type': 'application/json'
         },
-        body: JSON.stringify({ totalamount, data, paymentMethod })
+        body: JSON.stringify({ totalamount, data, paymentMethod,coupondiscount })
     }).then(res => res.json())
     .then(res => {
         console.log('Wallet payment response:', res);

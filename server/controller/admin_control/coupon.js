@@ -70,43 +70,41 @@ const edit = async(req,res) => {
 
 
 
-const post_edit=async(req,res)=>{
-    try{ 
-     const id=req.params.id
-     const get= await coupondb.findById(id)
-     const updatedCoupon = req.body;
- 
- 
-     if (!updatedCoupon.couponcode || !updatedCoupon.expireDate || !updatedCoupon.minPurchaseAmount || !updatedCoupon.discountPercentage) {
-         return res.render('editCoupon', { get: updatedCoupon, message: 'All fields are required.' });
-     }
- 
-     // Ensure discountPercentage is within valid range
-     if (updatedCoupon.discountPercentage < 10 || updatedCoupon.discountPercentage > 70) {
-         return res.render('editCoupon', { get: updatedCoupon, message: 'Discount percentage must be between 10 and 70.' });
-     }
- 
-     // Fetch existing coupon data
-    
-     if (!get) {
-         return res.render('editCoupon', { get: updatedCoupon, message: 'Coupon not found.' });
-     }
- 
-     // Check for duplicate coupon code
-     const couponSame = await coupondb.findOne({ couponcode: updatedCoupon.couponcode });
-     if (couponSame && couponSame._id.toString() !== id) {
-         return res.render('editCoupon', { get: updatedCoupon, message: 'Coupon already exists.' });
-     }
- 
-     await coupondb.findByIdAndUpdate(id, updatedCoupon, { new: true });
- 
- 
- 
-     res.redirect('/coupon');
-    }catch(err){
-     console.log(err);
+const post_edit = async (req, res) => {
+    try {
+      const id = req.params.id;
+      const get = await coupondb.findById(id);
+      const updatedCoupon = req.body;
+  
+      if (!updatedCoupon.couponcode || !updatedCoupon.expireDate || !updatedCoupon.minPurchaseAmount || !updatedCoupon.discountPercentage) {
+        return res.render('editCoupon', { get: updatedCoupon, message: 'All fields are required.' });
+      }
+  
+      // Ensure discountPercentage is less than 10
+      if (updatedCoupon.discountPercentage >= 10) {
+        return res.render('editCoupon', { get: updatedCoupon, message: 'Discount percentage must be less than 10.' });
+      }
+  
+      // Fetch existing coupon data
+      if (!get) {
+        return res.render('editCoupon', { get: updatedCoupon, message: 'Coupon not found.' });
+      }
+  
+      // Check for duplicate coupon code
+      const couponSame = await coupondb.findOne({ couponcode: updatedCoupon.couponcode });
+      if (couponSame && couponSame._id.toString() !== id) {
+        return res.render('editCoupon', { get: updatedCoupon, message: 'Coupon already exists.' });
+      }
+  
+      // Update the coupon
+      await coupondb.findByIdAndUpdate(id, updatedCoupon, { new: true });
+  
+      res.redirect('/coupon');
+    } catch (err) {
+      console.log(err);
     }
- }
+  };
+  
 
 
 

@@ -40,10 +40,9 @@
                                                 <h5 class="font-size-14 m-0">Coupon Discount:</h5>
                                             </td>
                                             <td id="discount-coupon">
-                                                <% console.log(order.coupon,"jhkhkjhkh");
-                                                 %>
-                                                <% if (order.coupon) { %>
-                                                    ₹<%= order.coupon.discount %>
+                                                
+                                                <% if (order.couponDiscount) { %>
+                                                    ₹<%= order.couponDiscount %>
                                                 <% } else { %>
                                                     ₹0
                                                 <% } %>

@@ -75,7 +75,7 @@ const get_checkout = async(req,res) => {
 
 const cod = async (req, res) => {
     try {
-        const { data, paymentMethod, totalamount, couponDiscount } = req.body;
+        const { data, paymentMethod, totalamount, coupondiscount } = req.body;
         const { items, addressId } = data;
         
         const address = await addressdb.findById(addressId);
@@ -119,12 +119,13 @@ const cod = async (req, res) => {
             userId: userId,
             items: updatedProducts,
             totalAmount: totalamount,
-            couponDiscount: couponDiscount || 0, // Add coupon discount to the order
-            finalAmount: totalamount - (couponDiscount || 0), // Calculate final amount after discount
+            
             address: address,
             paymentMethod: paymentMethod,
             paymentStatus: "Pending",
-            status: 'Pending'
+            status: 'Pending',
+            couponDiscount:coupondiscount
+
         });
 
         await order.save();
@@ -201,6 +202,7 @@ const placed = async(req,res) => {
 
 const onlinepayment = async (req,res) => {
     try {
+        console.log("heyyy");
         const totalAmount = req.body.totalamount;
 
         const order = await razorpay.orders.create({
@@ -219,7 +221,7 @@ const onlinepayment = async (req,res) => {
 
 const onlinepayed = async (req,res) => {
     try {
-        const {data,paymentMethod,total} = req.query;
+        const {data,paymentMethod,total,discount} = req.query;
 
         const parseData = JSON.parse(data);
         const {items,addressId} = parseData;
@@ -236,6 +238,7 @@ const onlinepayed = async (req,res) => {
         }
 
         const userId = User._id;
+        
 
         const updatedProducts = [];
         for(const item of items){
@@ -272,7 +275,8 @@ const onlinepayed = async (req,res) => {
             address: address,
             paymentMethod: paymentMethod,
             paymentStatus:"Completed",
-            status:'Pending'
+            status:'Pending',
+            couponDiscount:discount
         });
 
         await order.save();
@@ -424,7 +428,7 @@ const paymentSucces = async (req, res) => {
 }
 const walletpay = async (req, res) => {
     try {
-        const { totalamount, data, paymentMethod } = req.body;
+        const { totalamount, data, paymentMethod,coupondiscount } = req.body;
         const { items, addressId } = data;
 
         // Check if address exists
@@ -478,7 +482,10 @@ const walletpay = async (req, res) => {
             address: address,
             paymentMethod: paymentMethod,
             paymentStatus: 'Completed',
-            status: 'Pending'
+            status: 'Pending',
+            couponDiscount:coupondiscount
+
+
         });
         await order.save();
 
@@ -508,6 +515,10 @@ const walletpay = async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 };
+
+
+
+
 const apply_coupon = async (req, res) => {
     const { couponCode, totalAmount } = req.body;
 
