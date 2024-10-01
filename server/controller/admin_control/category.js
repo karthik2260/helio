@@ -7,40 +7,31 @@ const userdb = require('../../model/usermodel');
 
 
 
-
-
 const list = async (req, res) => {
     try {
-        const { id } = req.query; // Get category ID from query parameter
-        
+        const { id } = req.query;
+
         if (id) {
-            // Find category by ID
             const category = await Categorydb.findById(id);
 
             if (!category) {
                 return res.status(404).send('Category not found');
             }
 
-            // Toggle the 'list' status
             category.list = category.list === 'listed' ? 'unlisted' : 'listed';
-            
-            // Save the updated category
             await category.save();
 
-            // Redirect back to the category page after update
             return res.redirect('/category');
         }
 
-        // If no ID provided, render the category page
         const category = await Categorydb.find();
         res.render('admin/category', { category });
 
     } catch (err) {
-        console.error(err);
-        res.render('admin/err500');
+        console.error('Error in list function:', err);
+        res.status(500).send('Internal Server Error'); // More explicit error message
     }
 };
-
 
 
 
