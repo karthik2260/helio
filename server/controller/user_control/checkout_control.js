@@ -463,10 +463,6 @@ const walletpay = async (req, res) => {
 
             // Apply offer and calculate price
             const prod = await applyoffer(product);
-            product.stock -= item.quantity;
-            product.count += 1;
-            await product.save();
-
             updatedProducts.push({
                 productId: item.productId,
                 price: item.offerPrice,
@@ -492,9 +488,15 @@ const walletpay = async (req, res) => {
             {
                 $inc: { balance: -totalamount },
                 $push: { transactions: { type: 'withdrawal', amount: totalamount, description: 'Order payment' } }
-            },
-            { upsert: true, new: true }
+            }
         );
+
+        // Update product stock and count
+        for (const item of updatedProducts) {
+            await productdb.findByIdAndUpdate(item.productId, {
+                $inc: { stock: -item.quantity, count: 1 }
+            });
+        }
 
         // Clear cart
         await cartdb.findOneAndDelete({ user: userId });
@@ -506,7 +508,6 @@ const walletpay = async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 };
-
 const apply_coupon = async (req, res) => {
     const { couponCode, totalAmount } = req.body;
 
