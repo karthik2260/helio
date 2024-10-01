@@ -6,38 +6,43 @@ const userdb = require('../../model/usermodel');
 
 
 
-const list = async (req, res) => {
-    console.log('Category list function called');
-    try {
-        const { id } = req.query;
-        console.log('Request query ID:', id);
 
+
+
+const list = async (req, res) => {
+    try {
+        const { id } = req.query; // Get category ID from query parameter
+        
         if (id) {
-            // Find category by ID and update its list status
+            // Find category by ID
             const category = await Categorydb.findById(id);
+
             if (!category) {
-                console.log('Category not found');
                 return res.status(404).send('Category not found');
             }
 
             // Toggle the 'list' status
             category.list = category.list === 'listed' ? 'unlisted' : 'listed';
+            
+            // Save the updated category
             await category.save();
-            console.log(`Category ${id} updated. New list status: ${category.list}`);
+
+            // Redirect back to the category page after update
+            return res.redirect('/category');
         }
 
-        // Fetch all categories
-        const categories = await Categorydb.find();
-        console.log(`Fetched ${categories.length} categories`);
-
-        // Render the category page with all categories
-        return res.render('admin/category', { categories });
+        // If no ID provided, render the category page
+        const category = await Categorydb.find();
+        res.render('admin/category', { category });
 
     } catch (err) {
-        console.error('Error in category list function:', err);
-        return res.status(500).render('admin/err500', { error: err.message });
+        res.render('admin/err500');
     }
 };
+
+
+
+
 
 
 
