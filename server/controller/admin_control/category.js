@@ -7,19 +7,29 @@ const userdb = require('../../model/usermodel');
 
 
 
+
 const list = async (req, res) => {
     try {
-        const { id } = req.query;
-
+        const { id } = req.query; 
+        
+        console.log('Received request with id:', id); 
         if (id) {
             const category = await Categorydb.findById(id);
 
+            console.log('Found category:', category); 
+
             if (!category) {
+                console.log('Category not found'); 
                 return res.status(404).send('Category not found');
             }
 
             category.list = category.list === 'listed' ? 'unlisted' : 'listed';
+            
+            console.log('Updated category status:', category.list); 
+
             await category.save();
+
+            console.log('Category saved successfully');  
 
             return res.redirect('/category');
         }
@@ -29,7 +39,7 @@ const list = async (req, res) => {
 
     } catch (err) {
         console.error('Error in list function:', err);
-        res.status(500).send('Internal Server Error'); // More explicit error message
+        res.render('admin/err500');
     }
 };
 
