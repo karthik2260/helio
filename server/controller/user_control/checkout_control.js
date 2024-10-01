@@ -73,20 +73,16 @@ const get_checkout = async(req,res) => {
 
 
 
-const cod=async(req,res)=>{
+const cod = async (req, res) => {
     try {
-       
-        const { data, paymentMethod,totalamount} = req.body;
+        const { data, paymentMethod, totalamount, couponDiscount } = req.body;
         const { items, addressId } = data;
         
-        
-          
         const address = await addressdb.findById(addressId);
         
         if (!address) {
             return res.status(401).json({ message: 'Address not found', status: 401 });
         }
-
 
         const User = await userdb.findOne({ email: req.session.email });
         if (!User) {
@@ -94,13 +90,9 @@ const cod=async(req,res)=>{
         }
         const userId = User._id;
 
-       
-
         const updatedProducts = [];
         for (const item of items) {
             const productId = item.productId;
-       
-
             const product = await productdb.findById(productId);
             
             if (!product) {
@@ -109,14 +101,12 @@ const cod=async(req,res)=>{
             }
              
             if (product.stock < item.quantity) {
-               
                 return res.status(400).json({ message: `Product with ID ${productId} is out of stock` });
             }
 
             product.stock -= item.quantity;
             product.count += 1;
             await product.save();
-            
 
             updatedProducts.push({
                 productId: item.productId,
@@ -125,12 +115,12 @@ const cod=async(req,res)=>{
             });
         }
        
-
-           
         const order = new orderdb({
             userId: userId,
             items: updatedProducts,
             totalAmount: totalamount,
+            couponDiscount: couponDiscount || 0, // Add coupon discount to the order
+            finalAmount: totalamount - (couponDiscount || 0), // Calculate final amount after discount
             address: address,
             paymentMethod: paymentMethod,
             paymentStatus: "Pending",
@@ -140,17 +130,13 @@ const cod=async(req,res)=>{
         await order.save();
            
         await cartdb.findOneAndDelete({ user: userId });
-        res.json({message:"order completed"})
-
-
+        res.json({ message: "order completed" });
 
     } catch (error) {
         console.error(error.message);
         res.status(500).json({ message: 'Internal server error' });
     }
-}
-
-
+};
 
 const check_stock=async(req,res)=>{
     try {
@@ -521,7 +507,6 @@ const walletpay = async (req, res) => {
     }
 };
 
-
 const apply_coupon = async (req, res) => {
     const { couponCode, totalAmount } = req.body;
 
@@ -534,10 +519,21 @@ const apply_coupon = async (req, res) => {
         return res.status(400).json({ message: `Purchase must be above ₹${coupon.minPurchaseAmount}` });
     }
 
-    const discount = parseInt(totalAmount * coupon.discountPercentage) / 100;
+    let discount = parseInt(totalAmount * coupon.discountPercentage) / 100;
+
+    // Use maxDiscountAmount from the coupon
+    if (coupon.maxDiscountAmount && discount > coupon.maxDiscountAmount) {
+        discount = coupon.maxDiscountAmount;
+    }
+
     const newTotalAmount = Math.round(totalAmount - discount);
     res.json({ newTotalAmount, discount });
 };
+
+
+
+
+
 
 const removeCoupon = async (req, res) => {
     const { couponCode } = req.body;

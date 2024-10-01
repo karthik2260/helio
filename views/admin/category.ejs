@@ -183,19 +183,28 @@
                                       <% } %>
                           </td>
                           <td>
-                              <div>
-                                  <a href="/edit/<%= category._id %>" class="btn border-shadow shadow update">
-                                  <span class="material-symbols-outlined">edit</span>
-                                  </a>
-                                  <a  class="'btn border-shadow shadow delete" data-id="<%= category._id %>">
-                                      <span class="material-symbols-outlined"> delete</span>
-                                    </a>
-                                    <a href="/list?id=<%=category._id %>" class="btn border-shadow shadow visible">
-                                      <span class="material-symbols-outlined"></span>
-                                      <i class="fas fa-list"></i>
-                                    </a>
-                              </div>
-                          </td>
+                            <div>
+                                <!-- Edit Button -->
+                                <a href="/edit/<%= category._id %>" class="btn border-shadow shadow update">
+                                    <span class="material-symbols-outlined">edit</span>
+                                </a>
+                        
+                                <!-- Delete Button -->
+                                <a class="btn border-shadow shadow delete" data-id="<%= category._id %>">
+                                    <span class="material-symbols-outlined">delete</span>
+                                </a>
+                        
+                                <!-- List/Unlist Button -->
+                                <a href="/list?id=<%= category._id %>" class="btn border-shadow shadow visible">
+                                    <% if (category.list === 'listed') { %>
+                                        <span class="material-symbols-outlined">visibility_off</span> Unlist
+                                    <% } else { %>
+                                        <span class="material-symbols-outlined">visibility</span> List
+                                    <% } %>
+                                </a>
+                            </div>
+                        </td>
+                        
                       </tr>
                       <% }) %>
               </tbody>

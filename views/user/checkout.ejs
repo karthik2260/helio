@@ -432,7 +432,11 @@
                            
                         if (paymentMethod === 'cod' && items.length != 0) {
                             var totalElement = document.getElementById('totalAmountid');
+                            var couponelement = document.getElementById('dicount-coupon');
+
                                 const totalamount = totalElement.textContent.trim();
+                                const coupondiscount = couponelement.textContent.trim();
+
 
                                    if(totalamount>100000){
                                     Swal.fire({ 
@@ -468,7 +472,6 @@
 						}}
                         
                              if(paymentMethod === 'online' && items.length != 0){
-                                console.log("hi111");
                                 
                                 var totalElement = document.getElementById('totalAmountid');
                                 const totalamount = totalElement.textContent.trim();
@@ -480,7 +483,7 @@
 								headers: {
 									'content-Type': 'application/json'
 								},
-								body: JSON.stringify({ totalamount })
+								body: JSON.stringify({ totalamount,coupondiscount })
 							}).then(res => res.json())
                             .then(res => {
                                 const options = {

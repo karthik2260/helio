@@ -48,6 +48,9 @@ const orderSchema= new mongoose.Schema({
     paymentMethod:{
         type:String
     },
+    couponDiscount:{
+        type:Number
+    },
     paymentStatus: {
         type: String,
         default: 'Pending',

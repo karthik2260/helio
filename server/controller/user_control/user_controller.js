@@ -287,16 +287,19 @@ const block = async (req,res) => {
   res.render('user/block')
 }
 
+
 const index = async (req, res) => {
   try {
     let wishlist = null;
-    let cart = null; // Initialize cart to null
+    let cart = null;
     let cartCount = 0;
     let wishCount = 0;
 
+    // Check if the user is logged in via token
     if (req.cookies.userToken) {
       const user = await userdb.findOne({ email: req.session.email });
 
+      // Redirect to block page if user is blocked
       if (user && user.status === "block") {
         return res.redirect('/block');
       }
@@ -304,24 +307,42 @@ const index = async (req, res) => {
       if (user) {
         wishlist = await wishlistdb.findOne({ user: user._id }).populate();
         wishCount = wishlist ? wishlist.items.length : 0;
-        cart = await cartdb.findOne({ user: user._id }); // Assign cart here
+        cart = await cartdb.findOne({ user: user._id });
         cartCount = cart ? cart.items.length : 0;
       }
     }
 
-    const products = await productdb.find({list: 'listed'}).populate('Category');
+    // Fetch categories that are listed
+    const listedCategories = await Categorydb.find({ list: 'listed' }).select('_id');
+
+    // Fetch products that belong to the listed categories only
+    const products = await productdb.find({ Category: { $in: listedCategories } }).populate('Category');
+
+    // Apply offer logic to each product
     for (const product of products) {
       await applyoffer(product);
     }
+
+    // Fetch all categories (listed and unlisted) to show on the page
     const Categories = await Categorydb.find();
 
-    res.render('user/index', { products, userToken: req.cookies.userToken, wishlist, cart, wishCount, cartCount, Categories });
+    // Render the page with products from listed categories and all categories for the navigation
+    res.render('user/index', { 
+      products, 
+      userToken: req.cookies.userToken, 
+      wishlist, 
+      cart, 
+      wishCount, 
+      cartCount, 
+      Categories 
+    });
 
   } catch (err) {
     console.log(err);
     res.redirect('/err500');
   }
 };
+
  
 
 

@@ -45,6 +45,10 @@ route.get("/error500", admincontrol.err);
 route.get('/admin',admincontrol.admindash)
 route.get('/adminlogout',admincontrol.adminlogout)
 route.get('/category',categoryController.list)
+
+// Route for displaying and toggling category list/unlist
+route.get('/list', categoryController.list); // This route handles the toggle
+
 route.get('/userdetail',categoryController.user_details)
 route.get('/addcategory',categoryController.get_add)
 route.get('/edit/:id',categoryController.get_edit)
