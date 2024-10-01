@@ -7,39 +7,45 @@ const userdb = require('../../model/usermodel');
 
 
 
-
 const list = async (req, res) => {
+    console.log('List function called');
     try {
-        const { id } = req.query; 
-        
-        console.log('Received request with id:', id); 
-        if (id) {
-            const category = await Categorydb.findById(id);
+        console.log('Request query:', req.query);
+        const { id } = req.query;
 
-            console.log('Found category:', category); 
-
-            if (!category) {
-                console.log('Category not found'); 
-                return res.status(404).send('Category not found');
-            }
-
-            category.list = category.list === 'listed' ? 'unlisted' : 'listed';
-            
-            console.log('Updated category status:', category.list); 
-
-            await category.save();
-
-            console.log('Category saved successfully');  
-
-            return res.redirect('/category');
+        if (!id) {
+            console.log('No ID provided, fetching all categories');
+            const categories = await Categorydb.find();
+            console.log('Categories fetched:', categories.length);
+            return res.render('admin/category', { categories });
         }
 
-        const category = await Categorydb.find();
-        res.render('admin/category', { category });
+        console.log('Searching for category with ID:', id);
+        const category = await Categorydb.findById(id);
+
+        if (!category) {
+            console.log('Category not found');
+            return res.status(404).send('Category not found');
+        }
+
+        console.log('Category found:', category);
+        console.log('Current list status:', category.list);
+
+        // Toggle the 'list' status
+        category.list = category.list === 'listed' ? 'unlisted' : 'listed';
+        
+        console.log('New list status:', category.list);
+
+        // Save the updated category
+        await category.save();
+        console.log('Category saved successfully');
+
+        console.log('Redirecting to /category');
+        return res.redirect('/category');
 
     } catch (err) {
         console.error('Error in list function:', err);
-        res.render('admin/err500');
+        return res.status(500).render('admin/err500', { error: err.message });
     }
 };
 
