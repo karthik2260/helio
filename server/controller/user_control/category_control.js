@@ -52,15 +52,22 @@ const categoryProducts = async (req, res) => {
     try {
         let cartCount = 0;
         let wishCount = 0;
-        // Fetch the category using the category ID from the route parameter
-        const category = await Categorydb.findById(req.params.id);
         let wishlist = null;
 
+        // Fetch the category using the category ID from the route parameter
+        const category = await Categorydb.findById(req.params.id);
         
         if (!category) {
             console.error('Category not found');
             return res.redirect('/err500');
         }
+
+        // Check if the category is listed
+        if (category.list !== 'listed') {
+            console.error('Category is not listed');
+            return res.redirect('/'); // Redirect to home page or show an appropriate message
+        }
+
         if (req.cookies.userToken && req.session.email) {
             const user = await userdb.findOne({ email: req.session.email });
             if (user) {
@@ -70,12 +77,17 @@ const categoryProducts = async (req, res) => {
                 wishCount = wishlist ? wishlist.items.length : 0;
             }
         }
-        // Fetch products under the specific category
-        const products = await productdb.find({ Category: category._id,list:'listed' }).populate('Category');
+
+        // Fetch products under the specific category that are also listed
+        const products = await productdb.find({ 
+            Category: category._id,
+            list: 'listed'
+        }).populate('Category');
+
         for (const product of products) {
             await applyoffer(product);
-           
         }
+
         console.log(`Number of products in category ${category.CategoryName}: ${products.length}`);
 
         // Render the products page with the fetched products
@@ -88,13 +100,10 @@ const categoryProducts = async (req, res) => {
         });
 
     } catch (err) {
-        console.error(err);
+        console.error('Error in categoryProducts:', err);
         res.redirect('/err500');
     }
 }
-
-
-
 
 const gaming = async(req,res) => {
     try {
@@ -136,18 +145,30 @@ const allproduct = async (req, res) => {
         const limit = 8;
         const page = parseInt(req.query.page) || 1;
 
-        const products = await productdb.find({ list: 'listed' })
-            .populate('Category')
-            .skip((page - 1) * limit)
-            .limit(limit);
+        // Fetch only listed categories
+        const listedCategories = await Categorydb.find({ list: 'listed' }).select('_id');
+
+        // Fetch products that belong to listed categories and are listed themselves
+        const products = await productdb.find({ 
+            list: 'listed',
+            Category: { $in: listedCategories }
+        })
+        .populate('Category')
+        .skip((page - 1) * limit)
+        .limit(limit);
 
         for (const product of products) {
             await applyoffer(product);
         }
 
+        // Fetch all categories for display
         const category = await Categorydb.find();
 
-        const totalListedProducts = await productdb.countDocuments({ list: 'listed' });
+        // Count total listed products in listed categories
+        const totalListedProducts = await productdb.countDocuments({ 
+            list: 'listed',
+            Category: { $in: listedCategories }
+        });
         const pages = Math.ceil(totalListedProducts / limit);
         let wishlist = null;
 
@@ -177,7 +198,6 @@ const allproduct = async (req, res) => {
     }
 };
 
-
 const shopeCata=async(req,res)=>{
     try{
      const categoryId=req.body.items
@@ -200,9 +220,16 @@ const shopeCata=async(req,res)=>{
 
  const sortproduct = async (req, res) => {
     try {
-        const { brand, sort, word } = req.body; // Get brand and search keyword from request body
-        let filter = { list: 'listed' };
-        let sortOption = {};
+        const { brand, sort, word } = req.body;
+
+        // Fetch listed categories
+        const listedCategories = await Categorydb.find({ list: 'listed' }).select('_id');
+
+        // Base filter: product is listed and belongs to a listed category
+        let filter = { 
+            list: 'listed',
+            Category: { $in: listedCategories }
+        };
 
         if (brand) {
             filter.brand = brand;
@@ -218,31 +245,30 @@ const shopeCata=async(req,res)=>{
             ];
         }
 
+        let sortOption = {};
         switch (sort) {
-            case '2':
-                sortOption = { price: 1, offerPrice: 1 }; // Low to High
-                break;
-            case '3':
-                sortOption = { price: -1, offerPrice: -1 }; // High to Low
-                break;
-            case '4':
-                sortOption = { product_name: 1 }; // A to Z
-                break;
-            case '5':
-                sortOption = { product_name: -1 }; // Z to A
-                break;
-            case '6':
-                sortOption = { createdAt: -1 }; // Newest
-                break;
-            default:
-                sortOption = {};
+            case '2': sortOption = { price: 1, offerPrice: 1 }; break; // Low to High
+            case '3': sortOption = { price: -1, offerPrice: -1 }; break; // High to Low
+            case '4': sortOption = { product_name: 1 }; break; // A to Z
+            case '5': sortOption = { product_name: -1 }; break; // Z to A
+            case '6': sortOption = { createdAt: -1 }; break; // Newest
+            default: sortOption = {};
         }
 
-        const products = await productdb.find(filter).populate('Category').sort(sortOption).limit(8);
+        const products = await productdb.find(filter)
+            .populate('Category')
+            .sort(sortOption)
+            .limit(8);
+
+        // Apply offer to each product
+        for (const product of products) {
+            await applyoffer(product);
+        }
+
         res.json({ products });
     } catch (err) {
-        console.log(err);
-        res.status(500).json({ error: 'An error occurred' });
+        console.error('Error in sortproduct:', err);
+        res.status(500).json({ error: 'An error occurred during product sorting' });
     }
 };
 
@@ -251,7 +277,15 @@ const search = async (req, res) => {
     try {
         const { word, brand, sort } = req.body;
         const query = word.trim();
-        let filter = { list: 'listed' };
+
+        // Fetch listed categories
+        const listedCategories = await Categorydb.find({ list: 'listed' }).select('_id');
+
+        // Base filter: product is listed and belongs to a listed category
+        let filter = { 
+            list: 'listed',
+            Category: { $in: listedCategories }
+        };
 
         if (query.length === 1) {
             // If the query is a single letter, search for products starting with that letter
@@ -280,11 +314,20 @@ const search = async (req, res) => {
             case '6': sortOption = { createdAt: -1 }; break;
         }
 
-        const products = await productdb.find(filter).sort(sortOption).limit(8);
+        const products = await productdb.find(filter)
+            .populate('Category')  // Populate Category to access its properties if needed
+            .sort(sortOption)
+            .limit(8);
+
+        // Apply offer to each product
+        for (const product of products) {
+            await applyoffer(product);
+        }
+
         res.status(200).json(products);
     } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: 'An error occurred' });
+        console.error('Error in search:', error);
+        res.status(500).json({ error: 'An error occurred during search' });
     }
 };
 
