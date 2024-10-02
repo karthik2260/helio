@@ -202,7 +202,6 @@ const placed = async(req,res) => {
 
 const onlinepayment = async (req,res) => {
     try {
-        console.log("heyyy");
         const totalAmount = req.body.totalamount;
 
         const order = await razorpay.orders.create({
@@ -213,7 +212,6 @@ const onlinepayment = async (req,res) => {
 
         res.json({order});
     }catch(error){
-        console.error(error)
         res.status(500).json({message:'Error creating Razorpay order'})
     }
 }

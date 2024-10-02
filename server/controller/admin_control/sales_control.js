@@ -169,12 +169,12 @@ async function generatePDFReport(res, reportTitle, salesData, dailySalesData) {
 
         // Overall Sales Report Table
         doc.fontSize(16).text('Sales Report', { underline: true });
-        const overallTableHeaders = ['Date', 'Total Sales', 'Total Order Amount', 'Total Discount'];
-        const overallTableData = dailySalesData.map(({ date, totalSales, totalOrderAmount, totalDiscount }) =>
-            [new Date(date).toLocaleDateString(), totalSales, 'Rs.' + totalOrderAmount, 'Rs.' + totalDiscount]
+        const overallTableHeaders = ['Date', 'Total Sales', 'Total Order Amount', 'Coupon Discount'];
+        const overallTableData = dailySalesData.map(({ date, totalSales, totalOrderAmount, couponDiscount }) =>
+            [new Date(date).toLocaleDateString(), totalSales, 'Rs. ' + totalOrderAmount, 'Rs. ' + couponDiscount]
         );
-        const { totalSalesSum, totalOrderAmountSum, totalDiscountSum, totalCouponDiscountSum } = calculateTotalSums(dailySalesData);
-        generateTable(doc, overallTableHeaders, overallTableData, totalSalesSum, totalOrderAmountSum, totalDiscountSum, totalCouponDiscountSum);
+        const { totalSalesSum, totalOrderAmountSum, totalCouponDiscountSum } = calculateTotalSums(dailySalesData);
+        generateTable(doc, overallTableHeaders, overallTableData, totalSalesSum, totalOrderAmountSum, totalCouponDiscountSum);
 
         doc.end();
     } catch (error) {
@@ -183,35 +183,26 @@ async function generatePDFReport(res, reportTitle, salesData, dailySalesData) {
     }
 }
 
-
-
-
 function calculateTotalSums(dailySalesData) {
     let totalSalesSum = 0;
     let totalOrderAmountSum = 0;
-    let totalDiscountSum = 0;
     let totalCouponDiscountSum = 0;
 
-    dailySalesData.forEach(({ totalSales, totalOrderAmount, totalDiscount, totalCouponDiscount }) => {
+    dailySalesData.forEach(({ totalSales, totalOrderAmount, couponDiscount }) => {
         totalSalesSum += totalSales;
         totalOrderAmountSum += totalOrderAmount;
-        totalDiscountSum += totalDiscount;
-        totalCouponDiscountSum += totalCouponDiscount;
+        totalCouponDiscountSum += couponDiscount;
     });
 
     return {
         totalSalesSum,
         totalOrderAmountSum,
-        totalDiscountSum,
         totalCouponDiscountSum
     };
 }
 
-
-
-
-async function generateTable(doc, headers, data, totalSalesSum, totalOrderAmountSum, totalDiscountSum) {
-    const tableData = [...data, ['Total:', totalSalesSum, 'Rs.' + totalOrderAmountSum, 'Rs.' + totalDiscountSum]];
+async function generateTable(doc, headers, data, totalSalesSum, totalOrderAmountSum, totalCouponDiscountSum) {
+    const tableData = [...data, ['Total:', totalSalesSum, 'Rs. ' + totalOrderAmountSum, 'Rs. ' + totalCouponDiscountSum]];
 
     doc.table({
         headers: headers,
@@ -221,6 +212,7 @@ async function generateTable(doc, headers, data, totalSalesSum, totalOrderAmount
         headerRows: 1
     });
 }
+
 async function getYearlySales() {
     const today = new Date();
     const startOfYear = new Date(today.getFullYear(), 0, 1);
@@ -228,7 +220,6 @@ async function getYearlySales() {
     return await getOrderData(startOfYear, endOfYear);
 }
 
-// Helper functions to retrieve sales data based on different filter types
 async function getDailySales() {
     const today = new Date();
     const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -264,32 +255,29 @@ async function getOrderData(startDate, endDate) {
     orders.forEach(order => {
         let totalSales = 0;
         let totalOrderAmount = order.totalAmount;
-        let totalDiscount = 0;
-        let totalCouponDiscount = 0;
+        let totalOfferPrice = 0;
+        let couponDiscount = 0;
 
         order.items.forEach(item => {
             totalSales += item.quantity;
             const productPrice = item.price * item.quantity;
 
-            // Ensure item.productId is not null and has discount property
-            if (item.productId && item.productId.discount !== undefined) {
-                const discountAmount = productPrice - item.productId.discount;
-                totalDiscount += Math.round(discountAmount);
+            // Ensure item.productId is not null and has offerPrice property
+            if (item.productId && item.productId.offerPrice !== undefined) {
+                totalOfferPrice += item.productId.offerPrice;
             } else {
-                console.warn(`Missing or invalid discount for item: ${item.productId}`);
+                console.warn(`Missing or invalid offer price for item: ${item.productId}`);
             }
         });
 
-        if (order.couponused) {
-            totalCouponDiscount += order.couponused.maxdiscount;
-        }
+        // Calculate the coupon discount as TotalAmount - OfferPrice
+        couponDiscount = totalOrderAmount - totalOfferPrice;
 
         dailySalesData.push({
             date: order.orderedDate,
             totalSales,
             totalOrderAmount,
-            totalDiscount,
-            totalCouponDiscount
+            couponDiscount
         });
     });
 
@@ -307,21 +295,20 @@ async function generateExcelReport(res, reportTitle, salesData, dailySalesData) 
             { header: 'Date', key: 'date', width: 15 },
             { header: 'Total Sales', key: 'totalSales', width: 15 },
             { header: 'Total Order Amount', key: 'totalOrderAmount', width: 20 },
-            { header: 'Total Discount', key: 'totalDiscount', width: 15 },
-            { header: 'Total Coupon Discount', key: 'totalCouponDiscount', width: 20 }
+            { header: 'Coupon Discount', key: 'couponDiscount', width: 20 }
         ];
-        worksheet.mergeCells('A1:E1');
+        worksheet.mergeCells('A1:D1');
         worksheet.getCell('A1').value = `HELIO- ${reportTitle}`;
-        worksheet.addRow(['Date', 'Total Sales', 'Total Order Amount', 'Total Discount', 'Total Coupon Discount']);
+        worksheet.addRow(['Date', 'Total Sales', 'Total Order Amount', 'Coupon Discount']);
 
         // Add data rows
-        dailySalesData.forEach(({ date, totalSales, totalOrderAmount, totalDiscount, totalCouponDiscount }) => {
-            worksheet.addRow({ date: new Date(date).toLocaleDateString(), totalSales, totalOrderAmount: 'Rs.' + totalOrderAmount, totalDiscount: 'Rs.' + totalDiscount, totalCouponDiscount: 'Rs.' + totalCouponDiscount });
+        dailySalesData.forEach(({ date, totalSales, totalOrderAmount, couponDiscount }) => {
+            worksheet.addRow({ date: new Date(date).toLocaleDateString(), totalSales, totalOrderAmount: 'Rs. ' + totalOrderAmount, couponDiscount: 'Rs. ' + couponDiscount });
         });
 
         // Add total sums row
-        const { totalSalesSum, totalOrderAmountSum, totalDiscountSum, totalCouponDiscountSum } = calculateTotalSums(dailySalesData);
-        worksheet.addRow(['Total:', totalSalesSum, 'Rs.' + totalOrderAmountSum, 'Rs.' + totalDiscountSum, 'Rs.' + totalCouponDiscountSum]);
+        const { totalSalesSum, totalOrderAmountSum, totalCouponDiscountSum } = calculateTotalSums(dailySalesData);
+        worksheet.addRow(['Total:', totalSalesSum, 'Rs. ' + totalOrderAmountSum, 'Rs. ' + totalCouponDiscountSum]);
 
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.setHeader('Content-Disposition', 'attachment; filename=sales_report.xlsx');
@@ -333,7 +320,10 @@ async function generateExcelReport(res, reportTitle, salesData, dailySalesData) 
     }
 }
 
-
-module.exports={
-    monthlySales,dailyChart,yearlySales,get_report,generateReport
-}
+module.exports = {
+    monthlySales,
+    dailyChart,
+    yearlySales,
+    get_report,
+    generateReport
+};
